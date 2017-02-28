@@ -23,7 +23,7 @@ In addition, this project will include:
 This app will consist of a single screen with game board, game controls, and nav links to the Github, my LinkedIn,
 and the About modal.  Game controls will include Start, Stop, and Reset buttons, two rotate buttons, two buttons for moving left and right, and a button to drop the block immediately.
 
-![wireframes](https://github.com/lceames/Tetris/docs/tetris_wireframe.png)
+![wireframes](https://github.com/lceames/Tetris/blob/master/docs/tetris_wireframe.png)
 
 ### Architecture and Technologies
 
