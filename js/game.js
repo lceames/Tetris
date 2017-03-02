@@ -23,7 +23,8 @@ class Game {
     if (this.board.pieceFallen()) {
       this.board.updateGrid();
       let index = Math.floor(Math.random()*7);
-      this.board.setFallingPiece("s");
+      debugger
+      this.board.setFallingPiece(PIECES[index]);
     }
     else {
       this.board.moveFallingPiece("down");
@@ -32,6 +33,6 @@ class Game {
   }
 }
 
-const PIECES = ["square", "j-block", "l-block", "line", "i-skew", "o-skew", "t-turn"];
+const PIECES = ["square", "j", "l", "line", "s", "z", "t"];
 
 export default Game;

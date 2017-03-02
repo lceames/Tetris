@@ -65,6 +65,18 @@ class Board {
     else if (pieceName === "t") {
       this.setT.apply(this);
     }
+    else if (pieceName === "s") {
+      this.setS.apply(this);
+    }
+    else if (pieceName === "z") {
+      this.setZ.apply(this);
+    }
+    else if (pieceName == "j") {
+      this.setJ.apply(this);
+    }
+    else if (pieceName == "l") {
+      this.setL.apply(this);
+    }
   }
 
   setSquare() {
@@ -83,6 +95,18 @@ class Board {
     this.fallingPiece = [[4,1], [5,1], [5,0], [6,0]];
   }
 
+  setZ() {
+    this.fallingPiece = [[4,0], [5,0], [5,1], [6,1]];
+  }
+
+  setL() {
+    this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
+  }
+
+  setJ() {
+    this.fallingPiece = [[5,0], [5,1], [5,2], [4,2]];
+  }
+
   render() {
     this.fallingPiece.forEach( (pos) => {
       block(this.ctx, pos[0], pos[1], this.fallingPieceColor, false);
@@ -95,7 +119,10 @@ const PIECE_COLORS = {
   "square": "yellow",
   "line": "cyan",
   "t": "purple",
-  "s": "green"
+  "s": "green",
+  "z": "red",
+  "j": "blue",
+  "l": "orange"
 };
 
 Board.EMPTY_SQUARE = 0;
