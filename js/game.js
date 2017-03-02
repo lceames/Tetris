@@ -7,13 +7,13 @@ class Game {
   }
 
   handleKeydown(e) {
-    if (e.keyCode === 37) {
+    if (e.keyCode === 37 && !this.board.onBorder('left')) {
       this.board.moveFallingPiece("left");
     }
-    else if (e.keyCode === 39) {
+    else if (e.keyCode === 39 && !this.board.onBorder('right')) {
       this.board.moveFallingPiece("right");
     }
-    else if (e.keyCode == "40") {
+    else if (e.keyCode == "40" && !this.board.pieceFallen()) {
       this.board.moveFallingPiece('down');
     }
     this.board.render();
@@ -23,7 +23,6 @@ class Game {
     if (this.board.pieceFallen()) {
       this.board.updateGrid();
       let index = Math.floor(Math.random()*7);
-      debugger
       this.board.setFallingPiece(PIECES[index]);
     }
     else {

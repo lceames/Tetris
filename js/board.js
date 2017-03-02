@@ -29,6 +29,10 @@ class Board {
     });
   }
 
+  rotateFallingPiece() {
+    
+  }
+
   blankGrid() {
     let grid = [];
     let row = [];
@@ -45,6 +49,21 @@ class Board {
     let self = this;
     return this.fallingPiece.some( (pos) => {
       return (!self.grid[pos[1] + 1] || self.grid[pos[1] + 1][pos[0]] !== 0)
+    });
+  }
+
+  onBorder(direction) {
+    let self = this;
+    return this.fallingPiece.some( (pos) => {
+      if ((direction === "right" && pos[0] === 11) || (direction === "left" && pos[0] === 0)) {
+        return true;
+      }
+    });
+  }
+
+  onRightBorder(direction) {
+    let self = this;
+    this.fallingPiece.some( (pos) => {
     });
   }
 
