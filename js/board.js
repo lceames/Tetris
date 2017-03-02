@@ -1,16 +1,31 @@
 import block from './blocks/block';
+import clearBlock from './blocks/clear_block';
 
 class Board {
-  constructor(pieceName) {
+  constructor(pieceName, ctx) {
     this.grid = this.blankGrid();
+    this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
     this.pieceFallen = this.pieceFallen.bind(this);
   }
 
-  moveFallingPiece() {
+  moveFallingPiece(dir) {
+    let self = this;
+    this.fallingPiece.forEach( pos => {
+      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
+    });
+
     this.fallingPiece = this.fallingPiece.map((pos) => {
-      return [pos[0], pos[1] + 1];
+      if (dir === "down") {
+        return [pos[0], pos[1] + 1];
+      }
+      else if (dir === "right") {
+        return [pos[0] + 1, pos[1]];
+      }
+      else if (dir === "left") {
+        return [pos[0] - 1, pos[1]];
+      }
     });
   }
 
@@ -40,27 +55,37 @@ class Board {
   }
 
   setFallingPiece(pieceName) {
-    let positions;
+    this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
-      positions = [[0,0],[0,1],[1,0],[1,1]];
+      this.setSquare.apply(this);
     }
-    this.fallingPiece = positions;
+    else if (pieceName === "line") {
+      this.setLine.apply(this);
+    }
+    else if (pieceName === "t") {
+      this.setT.apply(this);
+    }
+  }
+
+  setSquare() {
+    this.fallingPiece = [[0,0],[0,1],[1,0],[1,1]];
+  }
+
+  setLine() {
+    this.fallingPiece = [[5,0],[5,1],[5,2],[5,3]];
+  }
+
+  setT() {
+    this.fallingPiece = [[4,1],[5,1],[6,1],[5,0]];
+  }
+
+  setS() {
+    this.fallingPiece = [[4,1], [5,1], [5,0], [6,0]];
   }
 
   render() {
-    let canvas = document.getElementById('board');
-    let ctx = canvas.getContext('2d');
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, 480, 800);
-    ctx.strokeRect(0,0, 480, 800);
-
     this.fallingPiece.forEach( (pos) => {
-      block(ctx, pos[0], pos[1], this.fallingPieceColor);
-    });
-
-    this.grid.forEach( (row, rowIdx, grid) => {
-      row.forEach( (pos, colIdx, row) => {
-      });
+      block(this.ctx, pos[0], pos[1], this.fallingPieceColor, false);
     });
   }
 
@@ -68,6 +93,9 @@ class Board {
 
 const PIECE_COLORS = {
   "square": "yellow",
+  "line": "cyan",
+  "t": "purple",
+  "s": "green"
 };
 
 Board.EMPTY_SQUARE = 0;
