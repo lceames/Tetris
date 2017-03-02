@@ -69,8 +69,9 @@ class Board {
   pieceFallen() {
     let self = this;
     return this.fallingPiece.some( (pos) => {
+      if (!self.grid[pos[1] + 1]) { return true; }
       let nextPos = self.grid[pos[1] + 1][pos[0]];
-      if (!nextPos[0]] || (nextPos !== 0 && nextPos !== "falling") {
+      if (nextPos !== 1 && nextPos !== "falling") {
         return true;
       }
     });
@@ -99,7 +100,7 @@ class Board {
 
   removeFallingFromGrid() {
     this.fallingPiece.forEach( (pos) => {
-      this.grid[pos[1]][pos[0]] = 0;
+      this.grid[pos[1]][pos[0]] = 1;
     });
   }
 
@@ -188,7 +189,7 @@ const PIECE_COLORS = {
   "l": "orange"
 };
 
-Board.EMPTY_SQUARE = 0;
+Board.EMPTY_SQUARE = 1;
 
 
 export default Board;
