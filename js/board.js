@@ -5,6 +5,7 @@ class Board {
     this.grid = this.blankGrid();
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
+    this.pieceFallen = this.pieceFallen.bind(this);
   }
 
   moveFallingPiece() {
@@ -26,12 +27,16 @@ class Board {
   }
 
   pieceFallen() {
-    this.fallingPiece.forEach( (pos) => {
-      if (this.grid[pos[0], pos[1] + 1] !== 0) {
-        return true;
-      }
+    let self = this;
+    return this.fallingPiece.some( (pos) => {
+      return (!self.grid[pos[1] + 1] || self.grid[pos[1] + 1][pos[0]] !== 0)
     });
-    return false;
+  }
+
+  updateGrid() {
+    this.fallingPiece.forEach( (pos) => {
+      this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
+    });
   }
 
   setFallingPiece(pieceName) {

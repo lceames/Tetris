@@ -5,14 +5,15 @@ class Game {
   }
 
   updateBoard() {
-    if (this.board.pieceFallen) {
+    this.board.render();
+    if (this.board.pieceFallen()) {
+      this.board.updateGrid();
       let index = Math.floor(Math.random()*7);
-      board.setFallingPiece("square");
+      this.board.setFallingPiece("square");
     }
     else {
       this.board.moveFallingPiece();
     }
-    this.board.render();
   }
 }
 
