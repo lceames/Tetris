@@ -28,9 +28,9 @@ class Game {
   updateBoard() {
     this.board.removeFallingFromGrid();
     if (this.board.pieceFallen()) {
+      this.board.addFallenToGrid();
       let index = Math.floor(Math.random()*7);
       this.board.setFallingPiece(PIECES[index]);
-      this.board.addFallenToGrid();
     }
     else {
       this.board.moveFallingPiece("down");
