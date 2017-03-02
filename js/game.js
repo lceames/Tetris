@@ -13,20 +13,28 @@ class Game {
     else if (e.keyCode === 39 && !this.board.onBorder('right')) {
       this.board.moveFallingPiece("right");
     }
-    else if (e.keyCode == "40" && !this.board.pieceFallen()) {
+    else if (e.keyCode == 40 && !this.board.pieceFallen()) {
       this.board.moveFallingPiece('down');
+    }
+    else if (e.keyCode === 65) {
+      this.board.rotateFallingPiece('left');
+    }
+    else if (e.keyCode === 83) {
+      this.board.rotateFallingPiece('right');
     }
     this.board.render();
   }
 
   updateBoard() {
+    this.board.removeFallingFromGrid();
     if (this.board.pieceFallen()) {
-      this.board.updateGrid();
       let index = Math.floor(Math.random()*7);
       this.board.setFallingPiece(PIECES[index]);
+      this.board.addFallenToGrid();
     }
     else {
       this.board.moveFallingPiece("down");
+      this.board.addFallingToGrid();
     }
     this.board.render();
   }

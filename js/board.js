@@ -7,6 +7,7 @@ class Board {
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
+    this.addFallingToGrid();
     this.pieceFallen = this.pieceFallen.bind(this);
   }
 
@@ -29,8 +30,28 @@ class Board {
     });
   }
 
-  rotateFallingPiece() {
-    
+  rotateFallingPiece(direction) {
+    let minX = this.fallingPiece[0][0];
+    let maxX = this.fallingPiece[0][0];
+    let minY = this.fallingPiece[0][1];
+    let maxY = this.fallingPiece[0][1];
+
+    this.fallingPiece.forEach( (pos) => {
+      if (pos[0] < minX) { minX = pos[0]; }
+      if (pos[0] > maxX) { maxX = pos[0]; }
+      if (pos[1] < mixY) { minY = pos[1]; }
+      if (pos[1] > maxY) { maxY = pos[1]; }
+    });
+
+    let xDiff = minX;
+    let yDiff = minY;
+    let xRange = maxX - minX;
+    let yRange = maxY - minY;
+    let matrixSize = xRange > yRange ? xRange : yRange;
+
+    for (let i = 0; i <= matrixSize; i++) {
+
+    }
   }
 
   blankGrid() {
@@ -48,7 +69,10 @@ class Board {
   pieceFallen() {
     let self = this;
     return this.fallingPiece.some( (pos) => {
-      return (!self.grid[pos[1] + 1] || self.grid[pos[1] + 1][pos[0]] !== 0)
+      let nextPos = self.grid[pos[1] + 1][pos[0]];
+      if (!nextPos[0]] || (nextPos !== 0 && nextPos !== "falling") {
+        return true;
+      }
     });
   }
 
@@ -61,15 +85,21 @@ class Board {
     });
   }
 
-  onRightBorder(direction) {
-    let self = this;
-    this.fallingPiece.some( (pos) => {
+  addFallingToGrid() {
+    this.fallingPiece.forEach( (pos) => {
+      this.grid[pos[1]][pos[0]] = "falling";
     });
   }
 
-  updateGrid() {
+  addFallenToGrid() {
     this.fallingPiece.forEach( (pos) => {
       this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
+    });
+  }
+
+  removeFallingFromGrid() {
+    this.fallingPiece.forEach( (pos) => {
+      this.grid[pos[1]][pos[0]] = 0;
     });
   }
 
@@ -131,6 +161,20 @@ class Board {
       block(this.ctx, pos[0], pos[1], this.fallingPieceColor, false);
     });
   }
+  //
+  // transposePiece() {
+  //   let piece = this.fallingPiece;
+  //   let transposed = [];
+  //   for (let i = 0; i < piece.length - 1; i++) {
+  //     let row = [];
+  //     for(let j = 0; j < piece[0].length; j++) {
+  //       row.push(piece[j][i]);
+  //     }
+  //     debugger
+  //     transposed.push(row);
+  //   }
+  //   this.fallingPiece = transposed;
+  // }
 
 }
 
