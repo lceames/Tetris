@@ -17,7 +17,7 @@ class Board {
     this.fallingPiece.forEach( pos => {
       self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
     });
-    debugger
+
     this.fallingPiece = this.fallingPiece.map((pos) => {
       if (dir === "down") {
         return [pos[0], pos[1] + 1];
@@ -29,7 +29,6 @@ class Board {
         return [pos[0] - 1, pos[1]];
       }
     });
-    debugger
   }
 
   rotateFallingPiece(direction) {
@@ -83,6 +82,12 @@ class Board {
     let self = this;
     return this.fallingPiece.some( (pos) => {
       if ((direction === "right" && pos[0] === 11) || (direction === "left" && pos[0] === 0)) {
+        debugger
+        return true;
+      }
+      let nextPos = direction === "right" ? self.grid[pos[1]][pos[0] + 1] : self.grid[pos[1]][pos[0] - 1]
+      if (nextPos !== 1 && nextPos !== "falling") {
+        debugger
         return true;
       }
     });
@@ -98,7 +103,6 @@ class Board {
     this.fallingPiece.forEach( (pos) => {
       this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
     });
-    debugger
   }
 
   removeFallingFromGrid() {
