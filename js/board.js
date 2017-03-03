@@ -7,17 +7,19 @@ class Board {
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
-    this.addFallingToGrid();
+    this.updateFallingInGrid("falling");
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
   }
 
   moveFallingPiece(dir) {
-    let self = this;
-    this.fallingPiece.forEach( pos => {
-      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
-    });
+    this.updateFallingInGrid(Board.EMPTY_SQUARE);
+    this.clearRect();
+    this.updateFallingPos(dir);
+    this.updateFallingInGrid("falling");
+  }
 
+  updateFallingPos(dir) {
     this.fallingPiece = this.fallingPiece.map((pos) => {
       if (dir === "down") {
         return [pos[0], pos[1] + 1];
@@ -28,6 +30,13 @@ class Board {
       else if (dir === "left") {
         return [pos[0] - 1, pos[1]];
       }
+    });
+  }
+
+  clearRect() {
+    let self = this;
+    this.fallingPiece.forEach( pos => {
+      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
     });
   }
 
@@ -44,13 +53,29 @@ class Board {
       if (pos[1] > maxY) { maxY = pos[1]; }
     });
 
+    let matrix = this.fallingPieceMatrix(minX, maxX, minY, maxY);
+    this.clearRect();
+
+    this.updateFallingInGrid(Board.EMPTY_SQUARE);
+    this.fallingPiece = [];
+    matrix.forEach( (row, rowIdx) => {
+      row.forEach( (pos, colIdx) => {
+        if (pos === "falling") {
+          this.fallingPiece.push([minX + colIdx, minY + rowIdx]);
+        }
+      });
+    });
+    this.updateFallingInGrid("falling");
+  }
+
+  fallingPieceMatrix(minX, maxX, minY, maxY) {
     let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY
     matrixLength += 1;
 
     let matrix = this.grid.slice(minY, minY + matrixLength).map( (row) => {
       return row.slice(minX, minX + matrixLength);
     });
-
+    debugger
     let transposed = [];
 
     for (let i = 0; i < matrix.length; i++) {
@@ -63,23 +88,7 @@ class Board {
       }
     }
 
-    transposed = transposed.map( column => column.reverse() );
-    let self = this;
-    this.fallingPiece.forEach( pos => {
-      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
-    });
-
-    this.removeFallingFromGrid();
-    this.fallingPiece = [];
-    transposed.forEach( (row, rowIdx) => {
-      row.forEach( (pos, colIdx) => {
-        if (pos === "falling") {
-          this.fallingPiece.push([minX + colIdx, minY + rowIdx]);
-        }
-      });
-    });
-
-    this.render();
+    return transposed.map( column => column.reverse() );
   }
 
   blankGrid() {
@@ -113,81 +122,52 @@ class Board {
       }
       let nextPos = direction === "right" ? self.grid[pos[1]][pos[0] + 1] : self.grid[pos[1]][pos[0] - 1]
       if (nextPos !== 1 && nextPos !== "falling") {
-        debugger
         return true;
       }
     });
   }
 
-  addFallingToGrid() {
+  updateFallingInGrid(fallingState) {
     this.fallingPiece.forEach( (pos) => {
-      this.grid[pos[1]][pos[0]] = "falling";
+      this.grid[pos[1]][pos[0]] = fallingState;
     });
   }
 
-  addFallenToGrid() {
-    this.fallingPiece.forEach( (pos) => {
-      this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
-    });
-  }
-
-  removeFallingFromGrid() {
-    this.fallingPiece.forEach( (pos) => {
-      this.grid[pos[1]][pos[0]] = 1;
-    });
-  }
+  // addFallenToGrid() {
+  //   this.fallingPiece.forEach( (pos) => {
+  //     this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
+  //   });
+  // }
+  //
+  // removeFallingFromGrid() {
+  //   this.fallingPiece.forEach( (pos) => {
+  //     this.grid[pos[1]][pos[0]] = 1;
+  //   });
+  // }
 
   setFallingPiece(pieceName) {
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
-      this.setSquare.apply(this);
+      this.fallingPiece = [[0,0],[0,1],[1,0],[1,1]];
     }
     else if (pieceName === "line") {
-      this.setLine.apply(this);
+      this.fallingPiece = [[5,0],[5,1],[5,2],[5,3]];
     }
     else if (pieceName === "t") {
-      this.setT.apply(this);
+      this.fallingPiece = [[4,1],[5,1],[6,1],[5,0]];
     }
     else if (pieceName === "s") {
-      this.setS.apply(this);
+      this.fallingPiece = [[4,1], [5,1], [5,0], [6,0]];
     }
     else if (pieceName === "z") {
-      this.setZ.apply(this);
+      this.fallingPiece = [[4,0], [5,0], [5,1], [6,1]];
     }
     else if (pieceName == "j") {
-      this.setJ.apply(this);
+      this.fallingPiece = [[5,0], [5,1], [5,2], [4,2]];
     }
     else if (pieceName == "l") {
-      this.setL.apply(this);
+      this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
-  }
-
-  setSquare() {
-    this.fallingPiece = [[0,0],[0,1],[1,0],[1,1]];
-  }
-
-  setLine() {
-    this.fallingPiece = [[5,0],[5,1],[5,2],[5,3]];
-  }
-
-  setT() {
-    this.fallingPiece = [[4,1],[5,1],[6,1],[5,0]];
-  }
-
-  setS() {
-    this.fallingPiece = [[4,1], [5,1], [5,0], [6,0]];
-  }
-
-  setZ() {
-    this.fallingPiece = [[4,0], [5,0], [5,1], [6,1]];
-  }
-
-  setL() {
-    this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
-  }
-
-  setJ() {
-    this.fallingPiece = [[5,0], [5,1], [5,2], [4,2]];
   }
 
   render() {
@@ -195,20 +175,6 @@ class Board {
       block(this.ctx, pos[0], pos[1], this.fallingPieceColor, false);
     });
   }
-  //
-  // transposePiece() {
-  //   let piece = this.fallingPiece;
-  //   let transposed = [];
-  //   for (let i = 0; i < piece.length - 1; i++) {
-  //     let row = [];
-  //     for(let j = 0; j < piece[0].length; j++) {
-  //       row.push(piece[j][i]);
-  //     }
-  //     debugger
-  //     transposed.push(row);
-  //   }
-  //   this.fallingPiece = transposed;
-  // }
 
 }
 
