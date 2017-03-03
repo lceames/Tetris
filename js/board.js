@@ -51,19 +51,19 @@ class Board {
       return row.slice(minX, minX + matrixLength);
     });
 
-    let columns = [];
+    let transposed = [];
 
     for (let i = 0; i < matrix.length; i++) {
-     columns.push([]);
+     transposed.push([]);
     }
 
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix[i].length; j++) {
-       columns[j].push(matrix[i][j]);
+       transposed[j].push(matrix[i][j]);
       }
     }
 
-    columns = columns.map( column => column.reverse() )
+    transposed = transposed.map( column => column.reverse() );
     let self = this;
     this.fallingPiece.forEach( pos => {
       self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
@@ -71,11 +71,14 @@ class Board {
 
     this.removeFallingFromGrid();
     this.fallingPiece = [];
-    columns.forEach( (col, rowIdx) => {
-      col.forEach( (pos, colIdx) => {
-        debugger
+    transposed.forEach( (row, rowIdx) => {
+      row.forEach( (pos, colIdx) => {
+        if (pos === "falling") {
+          this.fallingPiece.push([minX + colIdx, minY + rowIdx]);
+        }
       });
     });
+
     this.render();
   }
 
@@ -106,7 +109,6 @@ class Board {
     let self = this;
     return this.fallingPiece.some( (pos) => {
       if ((direction === "right" && pos[0] === 11) || (direction === "left" && pos[0] === 0)) {
-        debugger
         return true;
       }
       let nextPos = direction === "right" ? self.grid[pos[1]][pos[0] + 1] : self.grid[pos[1]][pos[0] - 1]

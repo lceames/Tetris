@@ -8,19 +8,27 @@ class Game {
 
   handleKeydown(e) {
     if (e.keyCode === 37 && !this.board.onBorder('left')) {
+      this.board.removeFallingFromGrid();
       this.board.moveFallingPiece("left");
+      this.board.addFallingToGrid();
     }
     else if (e.keyCode === 39 && !this.board.onBorder('right')) {
+      this.board.removeFallingFromGrid();
       this.board.moveFallingPiece("right");
+      this.board.addFallingToGrid();
     }
     else if (e.keyCode == 40 && !this.board.pieceFallen()) {
+      this.board.removeFallingFromGrid();
       this.board.moveFallingPiece('down');
+      this.board.addFallingToGrid();
     }
     else if (e.keyCode === 65) {
       this.board.rotateFallingPiece('left');
+      this.board.addFallingToGrid();
     }
     else if (e.keyCode === 83) {
       this.board.rotateFallingPiece('right');
+      this.board.addFallingToGrid();
     }
     this.board.render();
   }
