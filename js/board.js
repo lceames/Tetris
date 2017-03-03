@@ -40,18 +40,21 @@ class Board {
     this.fallingPiece.forEach( (pos) => {
       if (pos[0] < minX) { minX = pos[0]; }
       if (pos[0] > maxX) { maxX = pos[0]; }
-      if (pos[1] < mixY) { minY = pos[1]; }
+      if (pos[1] < minY) { minY = pos[1]; }
       if (pos[1] > maxY) { maxY = pos[1]; }
     });
 
-    let xDiff = minX;
-    let yDiff = minY;
-    let xRange = maxX - minX;
-    let yRange = maxY - minY;
-    let matrixSize = xRange > yRange ? xRange : yRange;
+    let matrix = this.grid.slice(minY, maxY + 1).map( (row) => {
+      return row.slice(minX, maxX + 1);
+    });
+    let tranposed = [];
 
-    for (let i = 0; i <= matrixSize; i++) {
-
+    for (let i = 0; i < matrix.length; i++) {
+      let row = [];
+      for (let j = 0; j < matrix.length; j++) {
+        row.push(matrix[j][i]);
+      }
+      row.push(transposed);
     }
   }
 
