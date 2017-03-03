@@ -44,18 +44,39 @@ class Board {
       if (pos[1] > maxY) { maxY = pos[1]; }
     });
 
-    let matrix = this.grid.slice(minY, maxY + 1).map( (row) => {
-      return row.slice(minX, maxX + 1);
+    let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY
+    matrixLength += 1;
+
+    let matrix = this.grid.slice(minY, minY + matrixLength).map( (row) => {
+      return row.slice(minX, minX + matrixLength);
     });
-    let tranposed = [];
+
+    let columns = [];
 
     for (let i = 0; i < matrix.length; i++) {
-      let row = [];
-      for (let j = 0; j < matrix.length; j++) {
-        row.push(matrix[j][i]);
-      }
-      row.push(transposed);
+     columns.push([]);
     }
+
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[i].length; j++) {
+       columns[j].push(matrix[i][j]);
+      }
+    }
+
+    columns = columns.map( column => column.reverse() )
+    let self = this;
+    this.fallingPiece.forEach( pos => {
+      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
+    });
+
+    this.removeFallingFromGrid();
+    this.fallingPiece = [];
+    columns.forEach( (col, rowIdx) => {
+      col.forEach( (pos, colIdx) => {
+        debugger
+      });
+    });
+    this.render();
   }
 
   blankGrid() {
