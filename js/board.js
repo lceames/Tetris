@@ -41,17 +41,7 @@ class Board {
   }
 
   rotateFallingPiece(direction) {
-    let minX = this.fallingPiece[0][0];
-    let maxX = this.fallingPiece[0][0];
-    let minY = this.fallingPiece[0][1];
-    let maxY = this.fallingPiece[0][1];
-
-    this.fallingPiece.forEach( (pos) => {
-      if (pos[0] < minX) { minX = pos[0]; }
-      if (pos[0] > maxX) { maxX = pos[0]; }
-      if (pos[1] < minY) { minY = pos[1]; }
-      if (pos[1] > maxY) { maxY = pos[1]; }
-    });
+    let { minX, maxX, minY, maxY } = this.matrixCoordinates.apply(this);
 
     let matrix = this.fallingPieceMatrix(minX, maxX, minY, maxY);
     this.clearRect();
@@ -68,6 +58,19 @@ class Board {
     this.updateFallingInGrid("falling");
   }
 
+  matrixCoordinates() {
+    let minX, maxX, minY, maxY;
+
+    this.fallingPiece.forEach( (pos) => {
+      if ((!minX) || pos[0] < minX) { minX = pos[0]; }
+      if ((!maxX) || pos[0] > maxX) { maxX = pos[0]; }
+      if ((!minY) || pos[1] < minY) { minY = pos[1]; }
+      if ((!maxY) || pos[1] > maxY) { maxY = pos[1]; }
+    });
+
+    return { minX, maxX, minY, maxY }
+  }
+
   fallingPieceMatrix(minX, maxX, minY, maxY) {
     let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY
     matrixLength += 1;
@@ -75,7 +78,7 @@ class Board {
     let matrix = this.grid.slice(minY, minY + matrixLength).map( (row) => {
       return row.slice(minX, minX + matrixLength);
     });
-    debugger
+
     let transposed = [];
 
     for (let i = 0; i < matrix.length; i++) {
@@ -133,22 +136,10 @@ class Board {
     });
   }
 
-  // addFallenToGrid() {
-  //   this.fallingPiece.forEach( (pos) => {
-  //     this.grid[pos[1]][pos[0]] = this.fallingPieceColor;
-  //   });
-  // }
-  //
-  // removeFallingFromGrid() {
-  //   this.fallingPiece.forEach( (pos) => {
-  //     this.grid[pos[1]][pos[0]] = 1;
-  //   });
-  // }
-
   setFallingPiece(pieceName) {
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
-      this.fallingPiece = [[0,0],[0,1],[1,0],[1,1]];
+      this.fallingPiece = [[4,0],[4,1],[5,0],[5,1]];
     }
     else if (pieceName === "line") {
       this.fallingPiece = [[5,0],[5,1],[5,2],[5,3]];
