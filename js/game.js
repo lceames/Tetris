@@ -3,7 +3,7 @@ import Board from './board';
 class Game {
   constructor(board) {
     this.board = board;
-    setInterval(this.updateBoard.bind(this), 1000)
+    setInterval(this.updateBoard.bind(this), 1000);
     $(document).keydown( this.handleKeydown.bind(this));
     board.render();
   }

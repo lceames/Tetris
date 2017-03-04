@@ -14,7 +14,7 @@ class Board {
 
   moveFallingPiece(dir) {
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
-    this.clearRect();
+    this.clearFallingFromCanvas();
     this.updateFallingPos(dir);
     this.updateFallingInGrid("falling");
   }
@@ -33,7 +33,7 @@ class Board {
     });
   }
 
-  clearRect() {
+  clearFallingFromCanvas() {
     let self = this;
     this.fallingPiece.forEach( pos => {
       self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
@@ -41,12 +41,15 @@ class Board {
   }
 
   rotateFallingPiece(direction) {
+    this.clearFallingFromCanvas();
     let { minX, maxX, minY, maxY } = this.matrixCoordinates.apply(this);
-
-    let matrix = this.fallingPieceMatrix(minX, maxX, minY, maxY);
-    this.clearRect();
-
+    let matrix = this.getMatrixFromFalling(minX, maxX, minY, maxY);
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
+    this.setFallingFromMatrix.call(this, matrix, minX, minY);
+    this.updateFallingInGrid("falling");
+  }
+
+  setFallingFromMatrix(matrix, minX, minY) {
     this.fallingPiece = [];
     matrix.forEach( (row, rowIdx) => {
       row.forEach( (pos, colIdx) => {
@@ -55,7 +58,6 @@ class Board {
         }
       });
     });
-    this.updateFallingInGrid("falling");
   }
 
   matrixCoordinates() {
@@ -68,17 +70,21 @@ class Board {
       if ((!maxY) || pos[1] > maxY) { maxY = pos[1]; }
     });
 
-    return { minX, maxX, minY, maxY }
+    return { minX, maxX, minY, maxY };
   }
 
-  fallingPieceMatrix(minX, maxX, minY, maxY) {
-    let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY
+  getMatrixFromFalling(minX, maxX, minY, maxY) {
+    let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY;
     matrixLength += 1;
+    // let diff = Math.floor(matrixLength/2)
+    // let midPointX = minX + diff;
+    // let midPointY = minY + diff;
+    // debugger
 
     let matrix = this.grid.slice(minY, minY + matrixLength).map( (row) => {
       return row.slice(minX, minX + matrixLength);
     });
-
+    // debugger
     let transposed = [];
 
     for (let i = 0; i < matrix.length; i++) {
@@ -91,7 +97,9 @@ class Board {
       }
     }
 
-    return transposed.map( column => column.reverse() );
+    transposed = transposed.map( column => column.reverse() );
+    debugger
+    return transposed;
   }
 
   blankGrid() {
@@ -123,7 +131,7 @@ class Board {
       if ((direction === "right" && pos[0] === 11) || (direction === "left" && pos[0] === 0)) {
         return true;
       }
-      let nextPos = direction === "right" ? self.grid[pos[1]][pos[0] + 1] : self.grid[pos[1]][pos[0] - 1]
+      let nextPos = direction === "right" ? self.grid[pos[1]][pos[0] + 1] : self.grid[pos[1]][pos[0] - 1];
       if (nextPos !== 1 && nextPos !== "falling") {
         return true;
       }
