@@ -31,6 +31,7 @@ class Game {
     this.board.updateFallingInGrid(Board.EMPTY_SQUARE);
     if (this.board.pieceFallen()) {
       this.board.updateFallingInGrid(this.board.fallingPieceColor);
+      this.board.eliminateFullLines();
       let index = Math.floor(Math.random()*7);
       this.board.setFallingPiece(PIECES[index]);
     }

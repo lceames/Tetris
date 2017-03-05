@@ -10,6 +10,7 @@ class Board {
     this.updateFallingInGrid("falling");
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
+    this.eliminateFullLines = this.eliminateFullLines.bind(this);
   }
 
   moveFallingPiece(dir) {
@@ -136,6 +137,32 @@ class Board {
       grid.push(row.slice());
     }
     return grid;
+  }
+
+  eliminateFullLines() {
+    this.grid.forEach( (row,idx) => {
+      if (row.every( coord => coord !== 1 )) {
+        this.eliminateLine(idx);
+      }
+    });
+    this.paintCanvas();
+  }
+
+  paintCanvas() {
+    this.ctx.clearRect(0, 0, 480, 800);
+    this.grid.forEach( (row, rowIdx) => {
+      row.forEach( (coord, colIdx) => {
+        if (coord !== 1) {
+          block(this.ctx, colIdx, rowIdx, coord, false);
+        }
+      });
+    });
+  }
+
+  eliminateLine(idx) {
+    for (idx; idx > 0; idx--) {
+      this.grid[idx] = this.grid[idx - 1];
+    }
   }
 
   pieceFallen() {
