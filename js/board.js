@@ -31,6 +31,16 @@ class Board {
         return [pos[0] - 1, pos[1]];
       }
     });
+
+    if (dir === "down") {
+      this.rotationAxis = [this.rotationAxis[0], this.rotationAxis[1] + 1];
+    }
+    else if (dir === "left") {
+      this.rotationAxis = [this.rotationAxis[0] - 1, this.rotationAxis[1]];
+    }
+    else if (dir === "right") {
+      this.rotationAxis = [this.rotationAxis[0] + 1, this.rotationAxis[1]];
+    }
   }
 
   clearFallingFromCanvas() {
@@ -41,13 +51,11 @@ class Board {
   }
 
   rotateFallingPiece(direction) {
-    let { minX, maxX, minY, maxY, matrixLength } = this.matrixCoordinates.apply(this);
-    debugger
+    let { minX, maxX, minY, maxY} = this.matrixCoordinates.apply(this);
     let matrix = this.getMatrixFromFalling(minX, maxX, minY, maxY);
     if (matrix.length === 0) {
       return;
     }
-    debugger
     this.clearFallingFromCanvas();
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.setFallingFromMatrix.call(this, matrix, minX, minY);
@@ -69,35 +77,28 @@ class Board {
     let minX, maxX, minY, maxY;
 
     this.fallingPiece.forEach( (pos) => {
-      if ((!minX) || pos[0] < minX) { minX = pos[0]; }
-      if ((!maxX) || pos[0] > maxX) { maxX = pos[0]; }
-      if ((!minY) || pos[1] < minY) { minY = pos[1]; }
-      if ((!maxY) || pos[1] > maxY) { maxY = pos[1]; }
+      if ((minX === undefined) || pos[0] < minX) { minX = pos[0]; }
+      if ((maxX === undefined) || pos[0] > maxX) { maxX = pos[0]; }
+      if ((minY === undefined) || pos[1] < minY) { minY = pos[1]; }
+      if ((maxY === undefined) || pos[1] > maxY) { maxY = pos[1]; }
     });
 
-    let matrixLength = (maxX - minX) > (maxY - minY) ? maxX - minX : maxY - minY;
-    if (matrixLength > (maxX - minX)) {
-      let remainder = matrixLength - (maxX - minX);
-      maxX += Math.floor(remainder/2);
-      minX -= (remainder - Math.floor(remainder/2));
-    }
-    else if (matrixLength > maxY - minY) {
-      let remainder = matrixLength - (maxY - minY);
-      maxY += Math.floor(remainder/2);
-      minY -= (remainder - Math.floor(remainder/2));
-    }
-
-    return { minX, maxX, minY, maxY, matrixLength };
-  }
-
-  getMatrixFromFalling(minX, maxX, minY, maxY, matrixLength) {
+    let matrixRange = (maxX - minX) > (maxY - minY) ? maxX - minX: maxY - minY;
+    minX = Math.round(this.rotationAxis[0] - (matrixRange/2));
+    maxX = Math.round(this.rotationAxis[0] + (matrixRange/2));
+    minY = Math.round(this.rotationAxis[1] - (matrixRange/2));
+    maxY = Math.round(this.rotationAxis[1] + (matrixRange/2));
 
     if (minY < 0 || minX < 0 || maxY > 20 || maxX > 11) {
       return [];
     }
 
-    let matrix = this.grid.slice(minY, minY + matrixLength + 1).map( (row) => {
-      return row.slice(minX, matrixLength + minX + 1);
+    return { minX, maxX, minY, maxY};
+  }
+
+  getMatrixFromFalling(minX, maxX, minY, maxY) {
+    let matrix = this.grid.slice(minY, maxY + 1).map( (row) => {
+      return row.slice(minX, maxX + 1);
     });
 
     matrix.forEach( row => {
@@ -170,11 +171,11 @@ class Board {
   setFallingPiece(pieceName) {
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
-      this.rotationAxis = [4.5,1.5];
+      this.rotationAxis = [4.5,0.5];
       this.fallingPiece = [[4,0],[4,1],[5,0],[5,1]];
     }
     else if (pieceName === "line") {
-      this.rotationAxis = [5,1.5];
+      this.rotationAxis = [5.5,1.5];
       this.fallingPiece = [[5,0],[5,1],[5,2],[5,3]];
     }
     else if (pieceName === "t") {
