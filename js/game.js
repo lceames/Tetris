@@ -1,11 +1,15 @@
 import Board from './board';
+import block from './blocks/block';
 
 class Game {
-  constructor(board) {
-    this.board = board;
-    this.interval = setInterval(this.updateBoard.bind(this), 1000);
+  constructor(ctx) {
+    this.board = new Board(this.randomPiece.apply(this), ctx);
+    this.nextPiece = this.randomPiece.apply(this);
+    // this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
+    // this.paintNextPiece.apply(this);
+    this.interval = setInterval(this.updateBoard.bind(this), 500);
     $(document).keydown( this.handleKeydown.bind(this));
-    board.render();
+    this.playNextPiece = this.playNextPiece.bind(this);
   }
 
   handleKeydown(e) {
@@ -26,26 +30,47 @@ class Game {
     }
     else if (e.keyCode == 32) {
       this.board.dropFallingPiece();
+      this.playNextPiece();
     }
     this.board.render();
   }
 
   updateBoard() {
     if (this.board.pieceFallen()) {
-      this.board.updateFallingInGrid(this.board.fallingPieceColor);
-      this.board.eliminateFullLines();
-      let index = Math.floor(Math.random()*7);
-      this.board.setFallingPiece(PIECES[index]);
-      if (this.board.gameOver(PIECES[index])) {
-        clearInterval(this.interval);
-        return;
-      }
-      this.board.updateFallingInGrid("falling");
+      this.playNextPiece();
     }
     else {
       this.board.moveFallingPiece("down");
     }
     this.board.render();
+  }
+
+  playNextPiece() {
+
+    this.board.updateFallingInGrid(this.board.fallingPieceColor);
+    this.board.eliminateFullLines();
+    this.board.setFallingPiece(this.nextPiece);
+    if (this.board.gameOver(this.nextPiece)) {
+      clearInterval(this.interval);
+      return;
+    }
+    this.nextPiece = this.randomPiece();
+    this.board.updateFallingInGrid("falling");
+  }
+
+  // paintNextPiece() {
+  //   block(this.nextPiece, 0, 0, this.fallingPieceColor, false);
+  // }
+
+  randomPiece() {
+    let index = Math.floor(Math.random()*7);
+    if (PIECES[index] || !this.board || PIECES[index] !== this.board.currentPiece) {
+      return PIECES[index];
+    }
+    else {
+      index = Math.floor(Math.random()*6);
+      return PIECES[index];
+    }
   }
 }
 

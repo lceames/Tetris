@@ -6,6 +6,7 @@ class Board {
     this.grid = this.blankGrid();
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
+    this.currentPiece = pieceName;
     this.setFallingPiece(pieceName);
     this.updateFallingInGrid("falling");
     this.pieceFallen = this.pieceFallen.bind(this);
@@ -47,7 +48,8 @@ class Board {
   clearFallingFromCanvas() {
     let self = this;
     this.fallingPiece.forEach( pos => {
-      self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
+      self.ctx.fillStyle = "white";
+      self.ctx.fillRect((pos[0] * 30), (pos[1] * 30), 31, 31);
     });
   }
 
@@ -163,7 +165,9 @@ class Board {
   }
 
   paintCanvas() {
-    this.ctx.clearRect(0, 0, 480, 800);
+    this.ctx.clearRect(0, 0, 360, 600);
+    this.ctx.fillStyle = "white";
+    this.ctx.fillRect(0, 0, 360, 600);
     this.grid.forEach( (row, rowIdx) => {
       row.forEach( (coord, colIdx) => {
         if (coord !== 1) {
@@ -211,11 +215,14 @@ class Board {
 
   gameOver() {
     return this.fallingPiece.some( coord => {
-      if (this.grid[coord[1]][coord[0]] !== 1) { return true; }
+      if (this.grid[coord[1]][coord[0]] !== 1) {
+        return true;
+      }
     });
   }
 
   setFallingPiece(pieceName) {
+    this.currentPiece = pieceName;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
       this.rotationAxis = [4.5,0.5];
@@ -245,7 +252,6 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
-    // this.updateFallingInGrid("falling");
   }
 
   render() {

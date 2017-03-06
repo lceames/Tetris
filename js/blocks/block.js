@@ -1,7 +1,7 @@
 const block = (ctx, x, y, color, size) => {
-  x = (x * 40) + 1;
-  y = (y * 40) + 1;
-  size = 39;
+  x = (x * 30) + 1;
+  y = (y * 30) + 1;
+  size = 29;
   ctx.fillStyle = color;
   ctx.strokeStyle = 'black';
   ctx.fillRect(x, y, size, size);

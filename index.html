@@ -2,14 +2,17 @@
   <head>
     <meta charset="utf-8">
     <title>Tetris</title>
+    <link rel="stylesheet" type="text/css" href="./css/tetris.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="bundle.js"></script>
   </head>
 
   <body>
-    <h1>Tetris</h1>
-
-    <figure class="tetris-game"></figure>
-    <canvas id="board" width="482" height="802"></canvas>
+    <div class="background">
+      <div class="board">
+        <!-- <canvas id=next-piece width="165" height="165"></canvas> -->
+        <canvas id="board" width="360" height="600"></canvas>
+      </div>
+    </div>
   </body>
 </html>
