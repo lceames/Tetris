@@ -28,6 +28,11 @@
   color: blue;
 }
 
+.tingle-modal-box__content {
+  text-align: center;
+  color: blue;
+}
+
 
 .board {
   display: flex;
