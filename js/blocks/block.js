@@ -1,5 +1,4 @@
 const block = (ctx, x, y, color, size) => {
-  debugger
   x = (x * 40) + 1;
   y = (y * 40) + 1;
   size = 39;

@@ -28,7 +28,6 @@ class Game {
   }
 
   updateBoard() {
-    this.board.updateFallingInGrid(Board.EMPTY_SQUARE);
     if (this.board.pieceFallen()) {
       this.board.updateFallingInGrid(this.board.fallingPieceColor);
       this.board.eliminateFullLines();
@@ -37,7 +36,6 @@ class Game {
     }
     else {
       this.board.moveFallingPiece("down");
-      this.board.updateFallingInGrid("falling");
     }
     this.board.render();
   }

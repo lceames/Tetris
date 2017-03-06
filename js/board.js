@@ -7,7 +7,6 @@ class Board {
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
-    this.updateFallingInGrid("falling");
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
     this.eliminateFullLines = this.eliminateFullLines.bind(this);
@@ -54,13 +53,21 @@ class Board {
   rotateFallingPiece(direction) {
     let { minX, maxX, minY, maxY} = this.matrixCoordinates.apply(this);
     let matrix = this.getMatrixFromFalling(minX, maxX, minY, maxY);
-    if (matrix.length === 0) {
+    if (matrix.length === 0 || this.matrixContainsFallenPiece(matrix)) {
       return;
     }
     this.clearFallingFromCanvas();
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.setFallingFromMatrix.call(this, matrix, minX, minY);
     this.updateFallingInGrid("falling");
+  }
+
+  matrixContainsFallenPiece(matrix) {
+    return matrix.some( row => {
+      if (row.some( el => (el !== 1 && el !== "falling"))) {
+        return true;
+      }
+    });
   }
 
   setFallingFromMatrix(matrix, minX, minY) {
@@ -161,7 +168,7 @@ class Board {
 
   eliminateLine(idx) {
     for (idx; idx > 0; idx--) {
-      this.grid[idx] = this.grid[idx - 1];
+      this.grid[idx] = this.grid[idx - 1].slice();
     }
   }
 
@@ -225,6 +232,7 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
+    this.updateFallingInGrid("falling");
   }
 
   render() {
