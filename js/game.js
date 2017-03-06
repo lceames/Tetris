@@ -5,11 +5,13 @@ class Game {
   constructor(ctx) {
     this.board = new Board(this.randomPiece.apply(this), ctx);
     this.nextPiece = this.randomPiece.apply(this);
+    this.startGame.apply(this);
     // this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
     // this.paintNextPiece.apply(this);
-    this.interval = setInterval(this.updateBoard.bind(this), 500);
     $(document).keydown( this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.pauseGame = this.pauseGame.bind(this);
   }
 
   handleKeydown(e) {
@@ -32,7 +34,25 @@ class Game {
       this.board.dropFallingPiece();
       this.playNextPiece();
     }
+    else if (e.keyCode === 80) {
+      if (this.paused) {
+        this.startGame();
+      }
+      else {
+        this.pauseGame();
+      }
+    }
     this.board.render();
+  }
+
+  startGame() {
+    this.interval = setInterval(this.updateBoard.bind(this), 500);
+    this.paused = false;
+  }
+
+  pauseGame() {
+    clearInterval(this.interval);
+    this.paused = true;
   }
 
   updateBoard() {
