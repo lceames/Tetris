@@ -157,7 +157,6 @@ class Game {
   paintSavedPiece() {
     this.savedPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
     this.savedPieceCanvas.fillRect(0, 0, 200, 200);
-    debugger
     nextPiece(this.savedPiece, this.savedPieceCanvas);
   }
 
