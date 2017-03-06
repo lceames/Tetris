@@ -54,6 +54,7 @@ class Board {
     });
   }
 
+
   dropFallingPiece() {
     while (!this.pieceFallen()) {
       this.moveFallingPiece("down");

@@ -3,7 +3,8 @@ import nextPiece from './blocks/next_piece';
 
 class Game {
   constructor(ctx, modal) {
-    this.board = new Board(this.randomPiece.apply(this), ctx);
+    this.currentPiece = this.randomPiece.apply(this);
+    this.board = new Board(this.currentPiece, ctx);
     this.nextPiece = this.randomPiece.apply(this);
     this.levelSpeed = 800;
     this.score = 0;
@@ -11,6 +12,7 @@ class Game {
     this.startGame.apply(this);
     this.UIModal = this.createModal.apply(this);
     this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
+    this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
     this.paintNextPiece.apply(this);
     $(document).keydown( this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
@@ -73,6 +75,9 @@ class Game {
         this.pauseGame();
       }
     }
+    else if (e.keyCode === 83) {
+      this.toggleSavedPiece();
+    }
     this.board.render();
   }
 
@@ -105,6 +110,22 @@ class Game {
     }
   }
 
+  toggleSavedPiece() {
+    this.savedPiece = this.currentPiece;
+    this.board.clearFallingFromCanvas();
+    this.board.updateFallingInGrid(Board.EMPTY_SQUARE);
+    if (this.savedPiece) {
+      this.board.setFallingPiece(this.savedPiece);
+    }
+    else {
+      this.board.setFallingPiece(this.nextPiece);
+      this.nextPiece = this.randomPiece();
+      this.paintNextPiece();
+      this.board.updateFallingInGrid('falling');
+    }
+    this.paintSavedPiece();
+  }
+
   nextLevel() {
     this.levelsIndex += 1;
     this.levelSpeed = 8000 / (levelsIndex + 1);
@@ -121,6 +142,7 @@ class Game {
       clearInterval(this.interval);
       return;
     }
+    this.currentPiece = this.nextPiece;
     this.nextPiece = this.randomPiece();
     this.paintNextPiece();
     this.board.updateFallingInGrid("falling");
@@ -130,6 +152,13 @@ class Game {
     this.nextPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
     this.nextPieceCanvas.fillRect(0, 0, 200, 200);
     nextPiece(this.nextPiece, this.nextPieceCanvas);
+  }
+
+  paintSavedPiece() {
+    this.savedPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
+    this.savedPieceCanvas.fillRect(0, 0, 200, 200);
+    debugger
+    nextPiece(this.savedPiece, this.savedPieceCanvas);
   }
 
   randomPiece() {
