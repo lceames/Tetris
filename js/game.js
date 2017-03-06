@@ -57,9 +57,9 @@ class Game {
     this.nextPiece = this.randomPiece();
     this.board.updateFallingInGrid("falling");
   }
-
+  //
   // paintNextPiece() {
-  //   block(this.nextPiece, 0, 0, this.fallingPieceColor, false);
+  //   block(this.ctx, 0, 0, this.nextPiece, false);
   // }
 
   randomPiece() {

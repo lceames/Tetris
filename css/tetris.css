@@ -9,9 +9,32 @@
   background-color: #1d1818;
 }
 
+.instructions {
+  color: blue;
+  background-color: white;
+  color: blue;
+  width: 250px;
+  height: 250px;
+  margin: 20px;
+  text-align: center;
+}
+
+.next-piece {
+  background-color: white;
+  width: 250px;
+  height: 250px;
+  margin: 20px;
+  text-align: center;
+  color: blue;
+}
+
 
 .board {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.content {
+  display: flex;
 }
