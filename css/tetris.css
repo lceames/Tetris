@@ -16,21 +16,30 @@
 
 .instructions {
   color: blue;
-  background-color: white;
-  color: blue;
-  width: 250px;
-  height: 250px;
+  background-color: rgba(0, 0, 21, 0.95);
+  color: white;
+  width: 180px;
+  height: 180px;
   margin: 20px;
   text-align: center;
 }
 
-.next-piece {
-  background-color: white;
-  width: 250px;
-  height: 250px;
-  margin: 20px;
+.instructions p {
+  font-size: 14px;
+}
+
+.score p {
+  font-size: 30px;
+}
+
+.next-piece, .save-piece {
+  background-color: rgba(0, 0, 21, 0.95);
+  width: 180px;
+  height: 180px;
+  margin-left: 20px;
   text-align: center;
-  color: blue;
+  color: white;
+  margin-bottom: 20px
 }
 
 .tingle-modal-box__content {
@@ -38,11 +47,32 @@
   color: blue;
 }
 
+.left-sidebar, .right-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 35px;
+}
+
+.score {
+  height: 180px;
+  width: 180px;
+  background-color: rgba(0, 0, 21, 0.95);
+  color: white;
+  text-align: center;
+}
+
 
 .board {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 360px;
+  height: 600px;
+  background-color: black;
+  border: 1px solid white;
+  margin-top: 30px;
 }
 
 .content {

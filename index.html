@@ -12,18 +12,29 @@
     <div class="background">
       <img src='./images/tetris-background.jpg' id='background-image'/>
       <div class="content">
-        <div class="instructions">
-          <h2>Instructions</h2>
-          <p> Use arrow key to move left, right and down </p>
-          <p> Press s to rotate </p>
-          <p> Spacebar to drop piece </p>
+        <div class="left-sidebar">
+          <div class="score">
+            <h2>Score</h2>
+            <p id="score">0</p>
+          </div>
+          <div class="instructions">
+            <h2>Instructions</h2>
+            <p> Use arrow keys to move left, right and down </p>
+            <p> Up to rotate </p>
+            <p> Spacebar to drop piece </p>
+          </div>
         </div>
         <div class="board">
           <canvas id="board" width="360" height="600"></canvas>
         </div>
-        <div class="next-piece">
-          <p> Next piece </p>
-          <canvas id=next-piece width="200" height="200"></canvas>
+        <div class="right-sidebar">
+          <div class="next-piece">
+            <h2> Next piece </h2>
+            <canvas id=next-piece width="140" height="80"></canvas>
+          </div>
+          <div class="save-piece">
+            <h2> Saved piece </h2>
+          </div>
         </div>
       </div>
   </div>

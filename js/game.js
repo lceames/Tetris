@@ -5,6 +5,9 @@ class Game {
   constructor(ctx, modal) {
     this.board = new Board(this.randomPiece.apply(this), ctx);
     this.nextPiece = this.randomPiece.apply(this);
+    this.levelSpeed = 800;
+    this.score = 0;
+    this.levelsIndex = 0;
     this.startGame.apply(this);
     this.UIModal = this.createModal.apply(this);
     this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
@@ -13,6 +16,7 @@ class Game {
     this.playNextPiece = this.playNextPiece.bind(this);
     this.startGame = this.startGame.bind(this);
     this.pauseGame = this.pauseGame.bind(this);
+    this.incrementScore.bind(this);
   }
 
   createModal() {
@@ -53,11 +57,8 @@ class Game {
     else if (e.keyCode == 40 && !this.board.pieceFallen()) {
       this.board.moveFallingPiece('down');
     }
-    else if (e.keyCode === 65) {
+    else if (e.keyCode === 38) {
       this.board.rotateFallingPiece('left');
-    }
-    else if (e.keyCode === 83) {
-      this.board.rotateFallingPiece('right');
     }
     else if (e.keyCode == 32) {
       this.board.dropFallingPiece();
@@ -76,7 +77,7 @@ class Game {
   }
 
   startGame() {
-    this.interval = setInterval(this.updateBoard.bind(this), 500);
+    this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
     this.paused = false;
   }
 
@@ -96,10 +97,25 @@ class Game {
     this.board.render();
   }
 
-  playNextPiece() {
+  incrementScore(lineCount) {
+    this.score += (100 * lineCount) * lineCount;
+    document.getElementById('score').innerHTML = this.score;
+    if (this.score >= LEVEL_THRESHOLDS[this.levelsIndex + 1]) {
+      this.nextLevel.apply(this);
+    }
+  }
 
+  nextLevel() {
+    this.levelsIndex += 1;
+    this.levelSpeed = 8000 / (levelsIndex + 1);
+    clearInterval(this.interval);
+    setInterval(this.updateBoard.bind(this), this.levelSpeed);
+  }
+
+  playNextPiece() {
     this.board.updateFallingInGrid(this.board.fallingPieceColor);
-    this.board.eliminateFullLines();
+    let eliminatedLineCount = this.board.eliminateFullLines();
+    this.incrementScore(eliminatedLineCount);
     this.board.setFallingPiece(this.nextPiece);
     if (this.board.gameOver(this.nextPiece)) {
       clearInterval(this.interval);
@@ -127,6 +143,15 @@ class Game {
     }
   }
 }
+
+const LEVEL_THRESHOLDS = {
+  0: 0,
+  1: 1000,
+  2: 2000,
+  3: 5000,
+  4: 8000,
+  5: 12000
+};
 
 const PIECES = ["square", "j", "l", "line", "s", "z", "t"];
 

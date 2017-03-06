@@ -48,6 +48,7 @@ class Board {
   clearFallingFromCanvas() {
     let self = this;
     this.fallingPiece.forEach( pos => {
+      self.ctx.clearRect((pos[0] * 30), (pos[1] * 30), 31, 31);
       self.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
       self.ctx.fillRect((pos[0] * 30), (pos[1] * 30), 31, 31);
     });
@@ -156,12 +157,15 @@ class Board {
   }
 
   eliminateFullLines() {
+    let lineCount = 0;
     this.grid.forEach( (row,idx) => {
       if (row.every( coord => coord !== 1 )) {
+        lineCount += 1;
         this.eliminateLine(idx);
       }
     });
     this.paintCanvas();
+    return lineCount;
   }
 
   paintCanvas() {

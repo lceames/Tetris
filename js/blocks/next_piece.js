@@ -7,31 +7,29 @@ import square from './square';
 import t from './t_turn';
 
 const nextPiece = (nextPieceType, nextPieceCtx) => {
+  nextPieceCtx.fillStyle = 'rgba(0, 0, 21, 0.95)';
+  nextPieceCtx.fillRect(0,0, 360, 600);
   if (nextPieceType === "square") {
-    square(nextPieceCtx, 3, 3, 30);
-  }
-  else if (nextPieceType === "j") {
-    j(nextPieceCtx, 2, 2, 30);
+    square(nextPieceCtx, 1, 0.5, 30);
   }
   else if (nextPieceType === "l") {
-    l(nextPieceCtx, 2, 2, 30);
+    j(nextPieceCtx, 1, 0.5, 30);
+  }
+  else if (nextPieceType === "j") {
+    l(nextPieceCtx, 1, 0.5, 30);
   }
   else if (nextPieceType === "line") {
-    line(nextPieceCtx, 2, 2, 30);
+    line(nextPieceCtx, 0.5, 1, 30);
   }
   else if (nextPieceType === "z") {
-    z(nextPieceCtx, 2, 2, 30);
+    z(nextPieceCtx, 1, 0.5, 30);
   }
   else if (nextPieceType === "t") {
-    t(nextPieceCtx, 2, 2, 30);
+    t(nextPieceCtx, 1, 0.5, 30);
   }
   else if (nextPieceType === "s"){
-    s(nextPieceCtx, 2, 2, 30);
+    s(nextPieceCtx, 1, 1, 30);
   }
-  else {
-    debugger
-  }
-
 };
 
 export default nextPiece;
