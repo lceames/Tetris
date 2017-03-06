@@ -7,6 +7,7 @@ class Board {
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.setFallingPiece(pieceName);
+    this.updateFallingInGrid("falling");
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
     this.eliminateFullLines = this.eliminateFullLines.bind(this);
@@ -48,6 +49,12 @@ class Board {
     this.fallingPiece.forEach( pos => {
       self.ctx.clearRect((pos[0] * 40), (pos[1] * 40), 41, 41);
     });
+  }
+
+  dropFallingPiece() {
+    while (!this.pieceFallen()) {
+      this.moveFallingPiece("down");
+    }
   }
 
   rotateFallingPiece(direction) {
@@ -202,6 +209,12 @@ class Board {
     });
   }
 
+  gameOver() {
+    return this.fallingPiece.some( coord => {
+      if (this.grid[coord[1]][coord[0]] !== 1) { return true; }
+    });
+  }
+
   setFallingPiece(pieceName) {
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     if (pieceName === "square") {
@@ -232,7 +245,7 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
-    this.updateFallingInGrid("falling");
+    // this.updateFallingInGrid("falling");
   }
 
   render() {
