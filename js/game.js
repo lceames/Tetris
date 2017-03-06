@@ -111,7 +111,7 @@ class Game {
   }
 
   paintNextPiece() {
-    this.nextPieceCanvas.fillStyle = "white";
+    this.nextPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
     this.nextPieceCanvas.fillRect(0, 0, 200, 200);
     nextPiece(this.nextPiece, this.nextPieceCanvas);
   }

@@ -48,7 +48,7 @@ class Board {
   clearFallingFromCanvas() {
     let self = this;
     this.fallingPiece.forEach( pos => {
-      self.ctx.fillStyle = "white";
+      self.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
       self.ctx.fillRect((pos[0] * 30), (pos[1] * 30), 31, 31);
     });
   }
@@ -166,7 +166,7 @@ class Board {
 
   paintCanvas() {
     this.ctx.clearRect(0, 0, 360, 600);
-    this.ctx.fillStyle = "white";
+    this.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
     this.ctx.fillRect(0, 0, 360, 600);
     this.grid.forEach( (row, rowIdx) => {
       row.forEach( (coord, colIdx) => {
