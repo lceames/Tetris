@@ -9,6 +9,11 @@
   background-color: #1d1818;
 }
 
+#background-image {
+  position: absolute;
+  z-index: -1;
+}
+
 .instructions {
   color: blue;
   background-color: white;

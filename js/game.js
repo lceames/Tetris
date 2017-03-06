@@ -1,5 +1,5 @@
 import Board from './board';
-import block from './blocks/block';
+import nextPiece from './blocks/next_piece';
 
 class Game {
   constructor(ctx, modal) {
@@ -8,7 +8,7 @@ class Game {
     this.startGame.apply(this);
     this.UIModal = this.createModal.apply(this);
     this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
-    // this.paintNextPiece.apply(this);
+    this.paintNextPiece.apply(this);
     $(document).keydown( this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
     this.startGame = this.startGame.bind(this);
@@ -106,11 +106,14 @@ class Game {
       return;
     }
     this.nextPiece = this.randomPiece();
+    this.paintNextPiece();
     this.board.updateFallingInGrid("falling");
   }
 
   paintNextPiece() {
-    block(this.nextPieceCanvas, 0, 0, this.nextPiece, false);
+    this.nextPieceCanvas.fillStyle = "white";
+    this.nextPieceCanvas.fillRect(0, 0, 200, 200);
+    nextPiece(this.nextPiece, this.nextPieceCanvas);
   }
 
   randomPiece() {

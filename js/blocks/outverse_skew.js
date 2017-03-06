@@ -1,17 +1,17 @@
 import block from './block';
 
 const outverseSkew = (ctx, x, y, size) => {
-  y += size;
+  y += 1;
   for (let i = 0; i < 2; i++) {
     block(ctx, x, y, 'red', size);
-    x += size;
+    x += 1;
   }
 
-  x -= size;
-  y -= size;
+  x -= 1;
+  y -= 1;
   for (let i = 0; i < 2; i++) {
     block(ctx, x, y, 'red', size);
-    x += size;
+    x += 1;
   }
 };
 

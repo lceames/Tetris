@@ -3,11 +3,11 @@ import block from './block';
 const tTurn = (ctx, x, y, size) => {
   for (let i = 0; i < 3; i++) {
     block(ctx, x, y, 'purple', size);
-    x += size;
+    x += 1;
   }
 
-  x -= (size * 2);
-  y += size;
+  x -= 2;
+  y += 1;
   block(ctx, x, y, 'purple', size);
 };
 
