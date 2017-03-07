@@ -3,12 +3,31 @@ import nextPiece from './blocks/next_piece';
 
 class Game {
   constructor(ctx) {
+    this.boardCanvas = ctx;
+    this.welcomeText.call(this);
     $(document).keydown( this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
     this.playGame = this.playGame.bind(this);
     this.pauseGame = this.pauseGame.bind(this);
     this.incrementScore.bind(this);
     this.beginGame = this.beginGame.bind(this);
+    this.gameOverText = this.gameOverText.bind(this);
+  }
+
+  welcomeText() {
+    this.boardCanvas.font = "24px Arial";
+    this.boardCanvas.fillStyle = "white";
+    this.boardCanvas.fillText("Welcome To Tetris",83,250);
+    this.boardCanvas.fillText("Press 'b' to begin the game",42,280);
+  }
+
+  gameOverText() {
+    this.boardCanvas.font = "46px Arial";
+    this.boardCanvas.fillStyle = "red";
+    this.boardCanvas.fillText("GAME OVER",42,250);
+    this.boardCanvas.font = "24px Arial";
+    this.boardCanvas.fillStyle = "white";
+    this.boardCanvas.fillText("Press 'b' to begin the game",42,280);
   }
 
   createModal() {
@@ -68,12 +87,20 @@ class Game {
     else if (e.keyCode === 83) {
       this.toggleSavedPiece();
     }
-    this.board.render();
+    else if (e.keyCode === 66 && this.gameOver !== false) {
+      this.beginGame();
+    }
+    if (this.board) {
+      this.board.render();
+    }
   }
 
   beginGame() {
+    this.gameOver = false;
+    this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
+    this.boardCanvas.fillRect(0, 0, 360, 600);
     this.currentPiece = this.randomPiece.apply(this);
-    this.board = new Board(this.currentPiece, ctx);
+    this.board = new Board(this.currentPiece, this.boardCanvas);
     this.nextPiece = this.randomPiece.apply(this);
     this.levelSpeed = 800;
     this.score = 0;
@@ -144,6 +171,8 @@ class Game {
     this.board.setFallingPiece(this.nextPiece);
     if (this.board.gameOver(this.nextPiece)) {
       clearInterval(this.interval);
+      this.gameOver = true;
+      this.gameOverText();
       return;
     }
     this.currentPiece = this.nextPiece;
