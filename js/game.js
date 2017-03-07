@@ -22,6 +22,8 @@ class Game {
   }
 
   gameOverText() {
+    this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
+    this.boardCanvas.fillRect(250, 0, 360, 150 );
     this.boardCanvas.font = "46px Arial";
     this.boardCanvas.fillStyle = "red";
     this.boardCanvas.fillText("GAME OVER",42,250);
@@ -142,13 +144,14 @@ class Game {
   }
 
   toggleSavedPiece() {
-    this.savedPiece = this.currentPiece;
     this.board.clearFallingFromCanvas();
     this.board.updateFallingInGrid(Board.EMPTY_SQUARE);
     if (this.savedPiece) {
       this.board.setFallingPiece(this.savedPiece);
+      this.savedPiece = this.currentPiece;
     }
     else {
+      this.savedPiece = this.currentPiece;
       this.board.setFallingPiece(this.nextPiece);
       this.nextPiece = this.randomPiece();
       this.paintNextPiece();
