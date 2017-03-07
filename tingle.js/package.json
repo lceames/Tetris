@@ -1,0 +1,106 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "tingle.js",
+        "scope": null,
+        "escapedName": "tingle.js",
+        "name": "tingle.js",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/leeeames/Desktop/Tetris"
+    ]
+  ],
+  "_from": "tingle.js@latest",
+  "_id": "tingle.js@0.9.0",
+  "_inCache": true,
+  "_location": "/tingle.js",
+  "_nodeVersion": "7.2.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/tingle.js-0.9.0.tgz_1483830838478_0.48602661793120205"
+  },
+  "_npmUser": {
+    "name": "robinparisi",
+    "email": "parisi.robin@gmail.com"
+  },
+  "_npmVersion": "3.10.9",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "tingle.js",
+    "scope": null,
+    "escapedName": "tingle.js",
+    "name": "tingle.js",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/tingle.js/-/tingle.js-0.9.0.tgz",
+  "_shasum": "4ccb8b28dd8c2058c4b925c65b440c94c62a0350",
+  "_shrinkwrap": null,
+  "_spec": "tingle.js",
+  "_where": "/Users/leeeames/Desktop/Tetris",
+  "author": {
+    "name": "robinparisi"
+  },
+  "bugs": {
+    "url": "https://github.com/robinparisi/tingle/issues"
+  },
+  "dependencies": {},
+  "description": "A simple modal plugin written in pure JavaScript",
+  "devDependencies": {
+    "browser-sync": "^2.18.5",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.0.2",
+    "gulp-gh-pages": "^0.5.2",
+    "gulp-minify-css": "^1.2.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0"
+  },
+  "directories": {
+    "doc": "doc"
+  },
+  "dist": {
+    "shasum": "4ccb8b28dd8c2058c4b925c65b440c94c62a0350",
+    "tarball": "https://registry.npmjs.org/tingle.js/-/tingle.js-0.9.0.tgz"
+  },
+  "gitHead": "e494f162796ae7b0a48c5a3be1b3b0da67b7d01a",
+  "homepage": "https://github.com/robinparisi/tingle#readme",
+  "keywords": [
+    "modal",
+    "popup",
+    "window",
+    "dialog",
+    "popin",
+    "lightbox"
+  ],
+  "license": "MIT",
+  "main": "dist/tingle.min.js",
+  "maintainers": [
+    {
+      "name": "biptaste",
+      "email": "biptaste@gmail.com"
+    },
+    {
+      "name": "robinparisi",
+      "email": "parisi.robin@gmail.com"
+    }
+  ],
+  "name": "tingle.js",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robinparisi/tingle.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.9.0"
+}
