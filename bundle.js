@@ -467,28 +467,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
-  function Game(ctx, modal) {
+  function Game(ctx) {
     _classCallCheck(this, Game);
 
-    this.currentPiece = this.randomPiece.apply(this);
-    this.board = new _board2.default(this.currentPiece, ctx);
-    this.nextPiece = this.randomPiece.apply(this);
-    this.levelSpeed = 800;
-    this.score = 0;
-    this.levelsIndex = 0;
-    this.startGame.apply(this);
-    this.UIModal = this.createModal.apply(this);
-    this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
-    this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
-    this.paintNextPiece.apply(this);
+    this.boardCanvas = ctx;
+    this.welcomeText.call(this);
     $(document).keydown(this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
-    this.startGame = this.startGame.bind(this);
+    this.playGame = this.playGame.bind(this);
     this.pauseGame = this.pauseGame.bind(this);
     this.incrementScore.bind(this);
+    this.beginGame = this.beginGame.bind(this);
+    this.gameOverText = this.gameOverText.bind(this);
   }
 
   _createClass(Game, [{
+    key: 'welcomeText',
+    value: function welcomeText() {
+      this.boardCanvas.font = "24px Arial";
+      this.boardCanvas.fillStyle = "white";
+      this.boardCanvas.fillText("Welcome To Tetris", 83, 250);
+      this.boardCanvas.fillText("Press 'b' to begin the game", 42, 280);
+    }
+  }, {
+    key: 'gameOverText',
+    value: function gameOverText() {
+      this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
+      this.boardCanvas.fillRect(250, 0, 360, 150);
+      this.boardCanvas.font = "46px Arial";
+      this.boardCanvas.fillStyle = "red";
+      this.boardCanvas.fillText("GAME OVER", 42, 250);
+      this.boardCanvas.font = "24px Arial";
+      this.boardCanvas.fillStyle = "white";
+      this.boardCanvas.fillText("Press 'b' to begin the game", 42, 280);
+    }
+  }, {
     key: 'createModal',
     value: function createModal() {
       var _this = this;
@@ -504,7 +517,7 @@ var Game = function () {
         onClose: function onClose() {
           console.log('modal close');
           if (_this.paused) {
-            _this.startGame();
+            _this.playGame();
           }
         }
       });
@@ -529,18 +542,40 @@ var Game = function () {
       } else if (e.keyCode === 80) {
         if (this.paused) {
           this.UIModal.close();
-          this.startGame();
+          this.playGame();
         } else {
           this.pauseGame();
         }
       } else if (e.keyCode === 83) {
         this.toggleSavedPiece();
+      } else if (e.keyCode === 66 && this.gameOver !== false) {
+        this.beginGame();
       }
-      this.board.render();
+      if (this.board) {
+        this.board.render();
+      }
     }
   }, {
-    key: 'startGame',
-    value: function startGame() {
+    key: 'beginGame',
+    value: function beginGame() {
+      this.gameOver = false;
+      this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
+      this.boardCanvas.fillRect(0, 0, 360, 600);
+      this.currentPiece = this.randomPiece.apply(this);
+      this.board = new _board2.default(this.currentPiece, this.boardCanvas);
+      this.nextPiece = this.randomPiece.apply(this);
+      this.levelSpeed = 800;
+      this.score = 0;
+      this.levelsIndex = 0;
+      this.playGame.apply(this);
+      this.UIModal = this.createModal.apply(this);
+      this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
+      this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
+      this.paintNextPiece.apply(this);
+    }
+  }, {
+    key: 'playGame',
+    value: function playGame() {
       this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
       this.paused = false;
     }
@@ -573,12 +608,13 @@ var Game = function () {
   }, {
     key: 'toggleSavedPiece',
     value: function toggleSavedPiece() {
-      this.savedPiece = this.currentPiece;
       this.board.clearFallingFromCanvas();
       this.board.updateFallingInGrid(_board2.default.EMPTY_SQUARE);
       if (this.savedPiece) {
         this.board.setFallingPiece(this.savedPiece);
+        this.savedPiece = this.currentPiece;
       } else {
+        this.savedPiece = this.currentPiece;
         this.board.setFallingPiece(this.nextPiece);
         this.nextPiece = this.randomPiece();
         this.paintNextPiece();
@@ -603,6 +639,8 @@ var Game = function () {
       this.board.setFallingPiece(this.nextPiece);
       if (this.board.gameOver(this.nextPiece)) {
         clearInterval(this.interval);
+        this.gameOver = true;
+        this.gameOverText();
         return;
       }
       this.currentPiece = this.nextPiece;
@@ -849,7 +887,7 @@ var nextPiece = function nextPiece(nextPieceType, nextPieceCtx) {
   } else if (nextPieceType === "t") {
     (0, _t_turn2.default)(nextPieceCtx, 1, 0.5, 30);
   } else if (nextPieceType === "s") {
-    (0, _inverse_skew2.default)(nextPieceCtx, 1, 1, 30);
+    (0, _inverse_skew2.default)(nextPieceCtx, 1, 0.5, 30);
   }
 };
 
