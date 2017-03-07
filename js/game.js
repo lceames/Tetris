@@ -2,23 +2,13 @@ import Board from './board';
 import nextPiece from './blocks/next_piece';
 
 class Game {
-  constructor(ctx, modal) {
-    this.currentPiece = this.randomPiece.apply(this);
-    this.board = new Board(this.currentPiece, ctx);
-    this.nextPiece = this.randomPiece.apply(this);
-    this.levelSpeed = 800;
-    this.score = 0;
-    this.levelsIndex = 0;
-    this.startGame.apply(this);
-    this.UIModal = this.createModal.apply(this);
-    this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
-    this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
-    this.paintNextPiece.apply(this);
+  constructor(ctx) {
     $(document).keydown( this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
-    this.startGame = this.startGame.bind(this);
+    this.playGame = this.playGame.bind(this);
     this.pauseGame = this.pauseGame.bind(this);
     this.incrementScore.bind(this);
+    this.beginGame = this.beginGame.bind(this);
   }
 
   createModal() {
@@ -33,7 +23,7 @@ class Game {
         onClose: () => {
           console.log('modal close');
           if (this.paused) {
-            this.startGame();
+            this.playGame();
           }
         },
         // beforeClose: function() {
@@ -69,7 +59,7 @@ class Game {
     else if (e.keyCode === 80) {
       if (this.paused) {
         this.UIModal.close();
-        this.startGame();
+        this.playGame();
       }
       else {
         this.pauseGame();
@@ -81,7 +71,21 @@ class Game {
     this.board.render();
   }
 
-  startGame() {
+  beginGame() {
+    this.currentPiece = this.randomPiece.apply(this);
+    this.board = new Board(this.currentPiece, ctx);
+    this.nextPiece = this.randomPiece.apply(this);
+    this.levelSpeed = 800;
+    this.score = 0;
+    this.levelsIndex = 0;
+    this.playGame.apply(this);
+    this.UIModal = this.createModal.apply(this);
+    this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
+    this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
+    this.paintNextPiece.apply(this);
+  }
+
+  playGame() {
     this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
     this.paused = false;
   }

@@ -28,7 +28,7 @@ const nextPiece = (nextPieceType, nextPieceCtx) => {
     t(nextPieceCtx, 1, 0.5, 30);
   }
   else if (nextPieceType === "s"){
-    s(nextPieceCtx, 1, 1, 30);
+    s(nextPieceCtx, 1, 0.5, 30);
   }
 };
 
