@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -76,10 +76,32 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var block = function block(ctx, x, y, color, size) {
+  x = x * 30 + 1;
+  y = y * 30 + 1;
+  size = 29;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = 'black';
+  ctx.fillRect(x, y, size, size);
+  ctx.strokeRect(x, y, size, size);
+};
+
+exports.default = block;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _block = __webpack_require__(1);
+var _block = __webpack_require__(0);
 
 var _block2 = _interopRequireDefault(_block);
 
@@ -140,7 +162,8 @@ var Board = function () {
     value: function clearFallingFromCanvas() {
       var self = this;
       this.fallingPiece.forEach(function (pos) {
-        self.ctx.fillStyle = "white";
+        self.ctx.clearRect(pos[0] * 30, pos[1] * 30, 31, 31);
+        self.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
         self.ctx.fillRect(pos[0] * 30, pos[1] * 30, 31, 31);
       });
     }
@@ -279,14 +302,17 @@ var Board = function () {
     value: function eliminateFullLines() {
       var _this2 = this;
 
+      var lineCount = 0;
       this.grid.forEach(function (row, idx) {
         if (row.every(function (coord) {
           return coord !== 1;
         })) {
+          lineCount += 1;
           _this2.eliminateLine(idx);
         }
       });
       this.paintCanvas();
+      return lineCount;
     }
   }, {
     key: 'paintCanvas',
@@ -294,7 +320,7 @@ var Board = function () {
       var _this3 = this;
 
       this.ctx.clearRect(0, 0, 360, 600);
-      this.ctx.fillStyle = "white";
+      this.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
       this.ctx.fillRect(0, 0, 360, 600);
       this.grid.forEach(function (row, rowIdx) {
         row.forEach(function (coord, colIdx) {
@@ -416,28 +442,6 @@ Board.EMPTY_SQUARE = 1;
 exports.default = Board;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var block = function block(ctx, x, y, color, size) {
-  x = x * 30 + 1;
-  y = y * 30 + 1;
-  size = 29;
-  ctx.fillStyle = color;
-  ctx.strokeStyle = 'black';
-  ctx.fillRect(x, y, size, size);
-  ctx.strokeRect(x, y, size, size);
-};
-
-exports.default = block;
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -450,32 +454,65 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _board = __webpack_require__(0);
+var _board = __webpack_require__(1);
 
 var _board2 = _interopRequireDefault(_board);
 
-var _block = __webpack_require__(1);
+var _next_piece = __webpack_require__(8);
 
-var _block2 = _interopRequireDefault(_block);
+var _next_piece2 = _interopRequireDefault(_next_piece);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
-  function Game(ctx) {
+  function Game(ctx, modal) {
     _classCallCheck(this, Game);
 
-    this.board = new _board2.default(this.randomPiece.apply(this), ctx);
+    this.currentPiece = this.randomPiece.apply(this);
+    this.board = new _board2.default(this.currentPiece, ctx);
     this.nextPiece = this.randomPiece.apply(this);
-    // this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
-    // this.paintNextPiece.apply(this);
-    this.interval = setInterval(this.updateBoard.bind(this), 500);
+    this.levelSpeed = 800;
+    this.score = 0;
+    this.levelsIndex = 0;
+    this.startGame.apply(this);
+    this.UIModal = this.createModal.apply(this);
+    this.nextPieceCanvas = document.getElementById('next-piece').getContext('2d');
+    this.savedPieceCanvas = document.getElementById('saved-piece').getContext('2d');
+    this.paintNextPiece.apply(this);
     $(document).keydown(this.handleKeydown.bind(this));
     this.playNextPiece = this.playNextPiece.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.pauseGame = this.pauseGame.bind(this);
+    this.incrementScore.bind(this);
   }
 
   _createClass(Game, [{
+    key: 'createModal',
+    value: function createModal() {
+      var _this = this;
+
+      var modal = new tingle.modal({
+        footer: true,
+        stickyFooter: false,
+        closeLabel: "Close",
+        cssClass: ['custom-class-1', 'custom-class-2'],
+        onOpen: function onOpen() {
+          console.log('modal open');
+        },
+        onClose: function onClose() {
+          console.log('modal close');
+          if (_this.paused) {
+            _this.startGame();
+          }
+        }
+      });
+      modal.setContent('<div><h1>GAME PAUSED</h1><p>Press "p" or close box to continue</p></div>');
+
+      return modal;
+    }
+  }, {
     key: 'handleKeydown',
     value: function handleKeydown(e) {
       if (e.keyCode === 37 && !this.board.onBorder('left')) {
@@ -484,15 +521,35 @@ var Game = function () {
         this.board.moveFallingPiece("right");
       } else if (e.keyCode == 40 && !this.board.pieceFallen()) {
         this.board.moveFallingPiece('down');
-      } else if (e.keyCode === 65) {
+      } else if (e.keyCode === 38) {
         this.board.rotateFallingPiece('left');
-      } else if (e.keyCode === 83) {
-        this.board.rotateFallingPiece('right');
       } else if (e.keyCode == 32) {
         this.board.dropFallingPiece();
         this.playNextPiece();
+      } else if (e.keyCode === 80) {
+        if (this.paused) {
+          this.UIModal.close();
+          this.startGame();
+        } else {
+          this.pauseGame();
+        }
+      } else if (e.keyCode === 83) {
+        this.toggleSavedPiece();
       }
       this.board.render();
+    }
+  }, {
+    key: 'startGame',
+    value: function startGame() {
+      this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
+      this.paused = false;
+    }
+  }, {
+    key: 'pauseGame',
+    value: function pauseGame() {
+      clearInterval(this.interval);
+      this.paused = true;
+      this.UIModal.open();
     }
   }, {
     key: 'updateBoard',
@@ -505,24 +562,68 @@ var Game = function () {
       this.board.render();
     }
   }, {
+    key: 'incrementScore',
+    value: function incrementScore(lineCount) {
+      this.score += 100 * lineCount * lineCount;
+      document.getElementById('score').innerHTML = this.score;
+      if (this.score >= LEVEL_THRESHOLDS[this.levelsIndex + 1]) {
+        this.nextLevel.apply(this);
+      }
+    }
+  }, {
+    key: 'toggleSavedPiece',
+    value: function toggleSavedPiece() {
+      this.savedPiece = this.currentPiece;
+      this.board.clearFallingFromCanvas();
+      this.board.updateFallingInGrid(_board2.default.EMPTY_SQUARE);
+      if (this.savedPiece) {
+        this.board.setFallingPiece(this.savedPiece);
+      } else {
+        this.board.setFallingPiece(this.nextPiece);
+        this.nextPiece = this.randomPiece();
+        this.paintNextPiece();
+        this.board.updateFallingInGrid('falling');
+      }
+      this.paintSavedPiece();
+    }
+  }, {
+    key: 'nextLevel',
+    value: function nextLevel() {
+      this.levelsIndex += 1;
+      this.levelSpeed = 8000 / (levelsIndex + 1);
+      clearInterval(this.interval);
+      setInterval(this.updateBoard.bind(this), this.levelSpeed);
+    }
+  }, {
     key: 'playNextPiece',
     value: function playNextPiece() {
-
       this.board.updateFallingInGrid(this.board.fallingPieceColor);
-      this.board.eliminateFullLines();
+      var eliminatedLineCount = this.board.eliminateFullLines();
+      this.incrementScore(eliminatedLineCount);
       this.board.setFallingPiece(this.nextPiece);
       if (this.board.gameOver(this.nextPiece)) {
         clearInterval(this.interval);
         return;
       }
+      this.currentPiece = this.nextPiece;
       this.nextPiece = this.randomPiece();
+      this.paintNextPiece();
       this.board.updateFallingInGrid("falling");
     }
-    //
-    // paintNextPiece() {
-    //   block(this.ctx, 0, 0, this.nextPiece, false);
-    // }
-
+  }, {
+    key: 'paintNextPiece',
+    value: function paintNextPiece() {
+      this.nextPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
+      this.nextPieceCanvas.fillRect(0, 0, 200, 200);
+      (0, _next_piece2.default)(this.nextPiece, this.nextPieceCanvas);
+    }
+  }, {
+    key: 'paintSavedPiece',
+    value: function paintSavedPiece() {
+      this.savedPieceCanvas.fillStyle = "rgba(0, 0, 21, 0.95)";
+      this.savedPieceCanvas.fillRect(0, 0, 200, 200);
+      (0, _next_piece2.default)(this.savedPiece, this.savedPieceCanvas);
+    }
   }, {
     key: 'randomPiece',
     value: function randomPiece() {
@@ -538,6 +639,15 @@ var Game = function () {
 
   return Game;
 }();
+
+var LEVEL_THRESHOLDS = {
+  0: 0,
+  1: 1000,
+  2: 2000,
+  3: 5000,
+  4: 8000,
+  5: 12000
+};
 
 var PIECES = ["square", "j", "l", "line", "s", "z", "t"];
 
@@ -557,7 +667,7 @@ var clearBlock = function clearBlock(ctx, x, y, color, cover, size) {
   x = x * 40 - 1;
   y = y * 40 - 1;
   size = 40;
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
   ctx.fillRect(x, y, size + 2, size + 2);
 };
 
@@ -570,11 +680,290 @@ exports.default = clearBlock;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var inverseSkew = function inverseSkew(ctx, x, y, size) {
+  for (var i = 0; i < 2; i++) {
+    (0, _block2.default)(ctx, x, y, 'green', size);
+    x += 1;
+  }
+
+  x -= 1;
+  y += 1;
+  for (var _i = 0; _i < 2; _i++) {
+    (0, _block2.default)(ctx, x, y, 'green', size);
+    x += 1;
+  }
+};
+
+exports.default = inverseSkew;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var jBlock = function jBlock(ctx, x, y, size) {
+  for (var i = 0; i < 3; i++) {
+    (0, _block2.default)(ctx, x, y, 'orange', size);
+    x += 1;
+  }
+
+  x -= 3;
+  y += 1;
+  (0, _block2.default)(ctx, x, y, 'orange', size);
+};
+
+exports.default = jBlock;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var lBlock = function lBlock(ctx, x, y, size) {
+  for (var i = 0; i < 3; i++) {
+    (0, _block2.default)(ctx, x, y, 'blue', size);
+    x += 1;
+  }
+
+  x -= 1;
+  y += 1;
+  (0, _block2.default)(ctx, x, y, 'blue', size);
+};
+
+exports.default = lBlock;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var line = function line(ctx, x, y, size) {
+  for (var i = 0; i < 4; i++) {
+    (0, _block2.default)(ctx, x, y, 'cyan', size);
+    x += 1;
+  }
+};
+
+exports.default = line;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _inverse_skew = __webpack_require__(4);
+
+var _inverse_skew2 = _interopRequireDefault(_inverse_skew);
+
+var _j_block = __webpack_require__(5);
+
+var _j_block2 = _interopRequireDefault(_j_block);
+
+var _l_block = __webpack_require__(6);
+
+var _l_block2 = _interopRequireDefault(_l_block);
+
+var _line = __webpack_require__(7);
+
+var _line2 = _interopRequireDefault(_line);
+
+var _outverse_skew = __webpack_require__(9);
+
+var _outverse_skew2 = _interopRequireDefault(_outverse_skew);
+
+var _square = __webpack_require__(10);
+
+var _square2 = _interopRequireDefault(_square);
+
+var _t_turn = __webpack_require__(11);
+
+var _t_turn2 = _interopRequireDefault(_t_turn);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var nextPiece = function nextPiece(nextPieceType, nextPieceCtx) {
+  nextPieceCtx.fillStyle = 'rgba(0, 0, 21, 0.95)';
+  nextPieceCtx.fillRect(0, 0, 360, 600);
+  if (nextPieceType === "square") {
+    (0, _square2.default)(nextPieceCtx, 1, 0.5, 30);
+  } else if (nextPieceType === "l") {
+    (0, _j_block2.default)(nextPieceCtx, 1, 0.5, 30);
+  } else if (nextPieceType === "j") {
+    (0, _l_block2.default)(nextPieceCtx, 1, 0.5, 30);
+  } else if (nextPieceType === "line") {
+    (0, _line2.default)(nextPieceCtx, 0.5, 1, 30);
+  } else if (nextPieceType === "z") {
+    (0, _outverse_skew2.default)(nextPieceCtx, 1, 0.5, 30);
+  } else if (nextPieceType === "t") {
+    (0, _t_turn2.default)(nextPieceCtx, 1, 0.5, 30);
+  } else if (nextPieceType === "s") {
+    (0, _inverse_skew2.default)(nextPieceCtx, 1, 1, 30);
+  }
+};
+
+exports.default = nextPiece;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var outverseSkew = function outverseSkew(ctx, x, y, size) {
+  y += 1;
+  for (var i = 0; i < 2; i++) {
+    (0, _block2.default)(ctx, x, y, 'red', size);
+    x += 1;
+  }
+
+  x -= 1;
+  y -= 1;
+  for (var _i = 0; _i < 2; _i++) {
+    (0, _block2.default)(ctx, x, y, 'red', size);
+    x += 1;
+  }
+};
+
+exports.default = outverseSkew;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var square = function square(ctx, x, y, size) {
+  for (var i = 0; i < 2; i++) {
+    (0, _block2.default)(ctx, x, y, 'yellow', size);
+    x += 1;
+  }
+  x -= 1 * 2;
+  y += 1;
+
+  for (var _i = 0; _i < 2; _i++) {
+    (0, _block2.default)(ctx, x, y, 'yellow', size);
+    x += 1;
+  }
+};
+
+exports.default = square;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _block = __webpack_require__(0);
+
+var _block2 = _interopRequireDefault(_block);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var tTurn = function tTurn(ctx, x, y, size) {
+  for (var i = 0; i < 3; i++) {
+    (0, _block2.default)(ctx, x, y, 'purple', size);
+    x += 1;
+  }
+
+  x -= 2;
+  y += 1;
+  (0, _block2.default)(ctx, x, y, 'purple', size);
+};
+
+exports.default = tTurn;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _game = __webpack_require__(2);
 
 var _game2 = _interopRequireDefault(_game);
 
-var _board = __webpack_require__(0);
+var _board = __webpack_require__(1);
 
 var _board2 = _interopRequireDefault(_board);
 
@@ -583,7 +972,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 $(function () {
   var canvas = document.getElementById('board');
   var ctx = canvas.getContext('2d');
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
   ctx.fillRect(0, 0, 360, 600);
   var game = new _game2.default(ctx);
 });
