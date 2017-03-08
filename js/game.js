@@ -75,7 +75,8 @@ class Game {
     }
     else if (e.keyCode == 32) {
       this.board.dropFallingPiece();
-      this.playNextPiece();
+      clearInterval(this.interval);
+      setTimeout( this.resetTimer.bind(this), this.levelSpeed/2);
     }
     else if (e.keyCode === 80) {
       if (this.paused) {
@@ -97,6 +98,11 @@ class Game {
     }
   }
 
+  resetTimer() {
+    this.updateBoard.apply(this);
+    this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
+  }
+
   beginGame() {
     this.gameOver = false;
     this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
@@ -104,7 +110,7 @@ class Game {
     this.currentPiece = this.randomPiece.apply(this);
     this.board = new Board(this.currentPiece, this.boardCanvas);
     this.nextPiece = this.randomPiece.apply(this);
-    this.levelSpeed = 800;
+    this.levelSpeed = 500;
     this.score = 0;
     this.levelsIndex = 0;
     this.playGame.apply(this);
@@ -162,7 +168,7 @@ class Game {
 
   nextLevel() {
     this.levelsIndex += 1;
-    this.levelSpeed = 8000 / (levelsIndex + 1);
+    this.levelSpeed = Math.floor(500 / (this.levelsIndex + 0.5));
     clearInterval(this.interval);
     setInterval(this.updateBoard.bind(this), this.levelSpeed);
   }
