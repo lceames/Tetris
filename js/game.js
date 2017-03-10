@@ -67,7 +67,7 @@ class Game {
     else if (e.keyCode === 39 && !this.board.onBorder('right')) {
       this.board.moveFallingPiece("right");
     }
-    else if (e.keyCode == 40 && !this.board.pieceFallen()) {
+    else if (e.keyCode == 40 && !this.board.pieceFallen("falling")) {
       this.board.moveFallingPiece('down');
     }
     else if (e.keyCode === 38) {
@@ -132,7 +132,7 @@ class Game {
   }
 
   updateBoard() {
-    if (this.board.pieceFallen()) {
+    if (this.board.pieceFallen("falling")) {
       this.playNextPiece();
     }
     else {
@@ -175,6 +175,7 @@ class Game {
 
   playNextPiece() {
     this.board.updateFallingInGrid(this.board.fallingPieceColor);
+    this.board.shadow = null;
     let eliminatedLineCount = this.board.eliminateFullLines();
     this.incrementScore(eliminatedLineCount);
     this.board.setFallingPiece(this.nextPiece);

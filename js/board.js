@@ -3,26 +3,40 @@ import clearBlock from './blocks/clear_block';
 
 class Board {
   constructor(pieceName, ctx) {
+    this.pieceFallen = this.pieceFallen.bind(this);
+    this.moveFallingPiece = this.moveFallingPiece.bind(this);
+    this.eliminateFullLines = this.eliminateFullLines.bind(this);
+    this.clearShadowFromCanvas = this.clearShadowFromCanvas.bind(this);
+    this.shiftPositions = this.shiftPositions.bind(this);
+    this.updateFallingPos = this.updateFallingPos.bind(this);
+
     this.grid = this.blankGrid();
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.currentPiece = pieceName;
     this.setFallingPiece(pieceName);
     this.updateFallingInGrid("falling");
-    this.pieceFallen = this.pieceFallen.bind(this);
-    this.moveFallingPiece = this.moveFallingPiece.bind(this);
-    this.eliminateFullLines = this.eliminateFullLines.bind(this);
+    this.setShadowPositions();
   }
 
   moveFallingPiece(dir) {
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.clearFallingFromCanvas();
-    this.updateFallingPos(dir);
+    this.clearShadowFromCanvas();
+    this.updateFallingPos(dir, "falling");
+    this.setShadowPositions();
     this.updateFallingInGrid("falling");
   }
 
-  updateFallingPos(dir) {
-    this.fallingPiece = this.fallingPiece.map( pos => {
+  setShadowPositions() {
+    this.shadow = this.fallingPiece.map( pos => [pos[0], pos[1]] );
+    while(!this.pieceFallen("shadow")) {
+      this.updateFallingPos("down", "shadow");
+    }
+  }
+
+  shiftPositions(positions, dir) {
+    return positions.map( pos => {
       if (dir === "down") {
         return [pos[0], pos[1] + 1];
       }
@@ -33,14 +47,24 @@ class Board {
         return [pos[0] - 1, pos[1]];
       }
     });
+  }
 
-    if (dir === "down") {
+  updateFallingPos(dir, type) {
+    let positionObject;
+    if (type === "falling") {
+      this.fallingPiece = this.shiftPositions(this.fallingPiece, dir);
+    }
+    else {
+      this.shadow = this.shiftPositions(this.shadow, dir);
+    }
+
+    if (dir === "down" && type === "falling") {
       this.rotationAxis = [this.rotationAxis[0], this.rotationAxis[1] + 1];
     }
-    else if (dir === "left") {
+    else if (dir === "left" && type === "falling") {
       this.rotationAxis = [this.rotationAxis[0] - 1, this.rotationAxis[1]];
     }
-    else if (dir === "right") {
+    else if (dir === "right" && type === "falling") {
       this.rotationAxis = [this.rotationAxis[0] + 1, this.rotationAxis[1]];
     }
   }
@@ -49,14 +73,22 @@ class Board {
     let self = this;
     this.fallingPiece.forEach( pos => {
       self.ctx.clearRect((pos[0] * 30), (pos[1] * 30), 31, 31);
-      self.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
+      self.ctx.fillStyle = "rgba(0, 0, 21, 1)";
       self.ctx.fillRect((pos[0] * 30), (pos[1] * 30), 31, 31);
     });
   }
 
+  clearShadowFromCanvas() {
+    if (this.shadow) {
+      this.shadow.forEach( pos => {
+        block(this.ctx, pos[0], pos[1], "rgba(0, 0, 21, 1)");
+      });
+    }
+  }
+
 
   dropFallingPiece() {
-    while (!this.pieceFallen()) {
+    while (!this.pieceFallen("falling")) {
       this.moveFallingPiece("down");
     }
   }
@@ -68,9 +100,11 @@ class Board {
       return;
     }
     this.clearFallingFromCanvas();
+    this.clearShadowFromCanvas();
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.setFallingFromMatrix.call(this, matrix, minX, minY);
     this.updateFallingInGrid("falling");
+    this.setShadowPositions();
   }
 
   matrixContainsFallenPiece(matrix) {
@@ -188,9 +222,16 @@ class Board {
     }
   }
 
-  pieceFallen() {
+  pieceFallen(type) {
+    let pieceObject;
+    if (type === "falling") {
+      pieceObject = this.fallingPiece;
+    }
+    else {
+      pieceObject = this.shadow;
+    }
     let self = this;
-    return this.fallingPiece.some( (pos) => {
+    return pieceObject.some( (pos) => {
       if (!self.grid[pos[1] + 1]) { return true; }
       let nextPos = self.grid[pos[1] + 1][pos[0]];
       if (nextPos !== 1 && nextPos !== "falling") {
@@ -257,11 +298,18 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
+    this.setShadowPositions();
   }
 
   render() {
+    if (this.shadow) {
+      this.shadow.forEach( (pos, idx) => {
+        block(this.ctx, pos[0], pos[1], "gray");
+      });
+    }
+
     this.fallingPiece.forEach( (pos) => {
-      block(this.ctx, pos[0], pos[1], this.fallingPieceColor, false);
+      block(this.ctx, pos[0], pos[1], this.fallingPieceColor);
     });
   }
 
