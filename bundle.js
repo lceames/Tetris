@@ -117,15 +117,20 @@ var Board = function () {
   function Board(pieceName, ctx) {
     _classCallCheck(this, Board);
 
+    this.pieceFallen = this.pieceFallen.bind(this);
+    this.moveFallingPiece = this.moveFallingPiece.bind(this);
+    this.eliminateFullLines = this.eliminateFullLines.bind(this);
+    this.clearShadowFromCanvas = this.clearShadowFromCanvas.bind(this);
+    this.shiftPositions = this.shiftPositions.bind(this);
+    this.updateFallingPos = this.updateFallingPos.bind(this);
+
     this.grid = this.blankGrid();
     this.ctx = ctx;
     this.fallingPieceColor = PIECE_COLORS[pieceName];
     this.currentPiece = pieceName;
     this.setFallingPiece(pieceName);
     this.updateFallingInGrid("falling");
-    this.pieceFallen = this.pieceFallen.bind(this);
-    this.moveFallingPiece = this.moveFallingPiece.bind(this);
-    this.eliminateFullLines = this.eliminateFullLines.bind(this);
+    this.setShadowPositions();
   }
 
   _createClass(Board, [{
@@ -133,13 +138,25 @@ var Board = function () {
     value: function moveFallingPiece(dir) {
       this.updateFallingInGrid(Board.EMPTY_SQUARE);
       this.clearFallingFromCanvas();
-      this.updateFallingPos(dir);
+      this.clearShadowFromCanvas();
+      this.updateFallingPos(dir, "falling");
+      this.setShadowPositions();
       this.updateFallingInGrid("falling");
     }
   }, {
-    key: 'updateFallingPos',
-    value: function updateFallingPos(dir) {
-      this.fallingPiece = this.fallingPiece.map(function (pos) {
+    key: 'setShadowPositions',
+    value: function setShadowPositions() {
+      this.shadow = this.fallingPiece.map(function (pos) {
+        return [pos[0], pos[1]];
+      });
+      while (!this.pieceFallen("shadow")) {
+        this.updateFallingPos("down", "shadow");
+      }
+    }
+  }, {
+    key: 'shiftPositions',
+    value: function shiftPositions(positions, dir) {
+      return positions.map(function (pos) {
         if (dir === "down") {
           return [pos[0], pos[1] + 1];
         } else if (dir === "right") {
@@ -148,12 +165,22 @@ var Board = function () {
           return [pos[0] - 1, pos[1]];
         }
       });
+    }
+  }, {
+    key: 'updateFallingPos',
+    value: function updateFallingPos(dir, type) {
+      var positionObject = void 0;
+      if (type === "falling") {
+        this.fallingPiece = this.shiftPositions(this.fallingPiece, dir);
+      } else {
+        this.shadow = this.shiftPositions(this.shadow, dir);
+      }
 
-      if (dir === "down") {
+      if (dir === "down" && type === "falling") {
         this.rotationAxis = [this.rotationAxis[0], this.rotationAxis[1] + 1];
-      } else if (dir === "left") {
+      } else if (dir === "left" && type === "falling") {
         this.rotationAxis = [this.rotationAxis[0] - 1, this.rotationAxis[1]];
-      } else if (dir === "right") {
+      } else if (dir === "right" && type === "falling") {
         this.rotationAxis = [this.rotationAxis[0] + 1, this.rotationAxis[1]];
       }
     }
@@ -163,14 +190,25 @@ var Board = function () {
       var self = this;
       this.fallingPiece.forEach(function (pos) {
         self.ctx.clearRect(pos[0] * 30, pos[1] * 30, 31, 31);
-        self.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
+        self.ctx.fillStyle = "rgba(0, 0, 21, 1)";
         self.ctx.fillRect(pos[0] * 30, pos[1] * 30, 31, 31);
       });
     }
   }, {
+    key: 'clearShadowFromCanvas',
+    value: function clearShadowFromCanvas() {
+      var _this = this;
+
+      if (this.shadow) {
+        this.shadow.forEach(function (pos) {
+          (0, _block2.default)(_this.ctx, pos[0], pos[1], "rgba(0, 0, 21, 1)");
+        });
+      }
+    }
+  }, {
     key: 'dropFallingPiece',
     value: function dropFallingPiece() {
-      while (!this.pieceFallen()) {
+      while (!this.pieceFallen("falling")) {
         this.moveFallingPiece("down");
       }
     }
@@ -188,9 +226,11 @@ var Board = function () {
         return;
       }
       this.clearFallingFromCanvas();
+      this.clearShadowFromCanvas();
       this.updateFallingInGrid(Board.EMPTY_SQUARE);
       this.setFallingFromMatrix.call(this, matrix, minX, minY);
       this.updateFallingInGrid("falling");
+      this.setShadowPositions();
     }
   }, {
     key: 'matrixContainsFallenPiece',
@@ -206,13 +246,13 @@ var Board = function () {
   }, {
     key: 'setFallingFromMatrix',
     value: function setFallingFromMatrix(matrix, minX, minY) {
-      var _this = this;
+      var _this2 = this;
 
       this.fallingPiece = [];
       matrix.forEach(function (row, rowIdx) {
         row.forEach(function (pos, colIdx) {
           if (pos === "falling") {
-            _this.fallingPiece.push([minX + colIdx, minY + rowIdx]);
+            _this2.fallingPiece.push([minX + colIdx, minY + rowIdx]);
           }
         });
       });
@@ -300,7 +340,7 @@ var Board = function () {
   }, {
     key: 'eliminateFullLines',
     value: function eliminateFullLines() {
-      var _this2 = this;
+      var _this3 = this;
 
       var lineCount = 0;
       this.grid.forEach(function (row, idx) {
@@ -308,7 +348,7 @@ var Board = function () {
           return coord !== 1;
         })) {
           lineCount += 1;
-          _this2.eliminateLine(idx);
+          _this3.eliminateLine(idx);
         }
       });
       this.paintCanvas();
@@ -317,7 +357,7 @@ var Board = function () {
   }, {
     key: 'paintCanvas',
     value: function paintCanvas() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.ctx.clearRect(0, 0, 360, 600);
       this.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
@@ -325,7 +365,7 @@ var Board = function () {
       this.grid.forEach(function (row, rowIdx) {
         row.forEach(function (coord, colIdx) {
           if (coord !== 1) {
-            (0, _block2.default)(_this3.ctx, colIdx, rowIdx, coord, false);
+            (0, _block2.default)(_this4.ctx, colIdx, rowIdx, coord, false);
           }
         });
       });
@@ -339,9 +379,15 @@ var Board = function () {
     }
   }, {
     key: 'pieceFallen',
-    value: function pieceFallen() {
+    value: function pieceFallen(type) {
+      var pieceObject = void 0;
+      if (type === "falling") {
+        pieceObject = this.fallingPiece;
+      } else {
+        pieceObject = this.shadow;
+      }
       var self = this;
-      return this.fallingPiece.some(function (pos) {
+      return pieceObject.some(function (pos) {
         if (!self.grid[pos[1] + 1]) {
           return true;
         }
@@ -368,19 +414,19 @@ var Board = function () {
   }, {
     key: 'updateFallingInGrid',
     value: function updateFallingInGrid(fallingState) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.fallingPiece.forEach(function (pos) {
-        _this4.grid[pos[1]][pos[0]] = fallingState;
+        _this5.grid[pos[1]][pos[0]] = fallingState;
       });
     }
   }, {
     key: 'gameOver',
     value: function gameOver() {
-      var _this5 = this;
+      var _this6 = this;
 
       return this.fallingPiece.some(function (coord) {
-        if (_this5.grid[coord[1]][coord[0]] !== 1) {
+        if (_this6.grid[coord[1]][coord[0]] !== 1) {
           return true;
         }
       });
@@ -412,14 +458,22 @@ var Board = function () {
         this.rotationAxis = [5, 1];
         this.fallingPiece = [[5, 0], [5, 1], [5, 2], [6, 2]];
       }
+      this.clearShadowFromCanvas();
+      this.setShadowPositions();
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this6 = this;
+      var _this7 = this;
+
+      if (this.shadow) {
+        this.shadow.forEach(function (pos, idx) {
+          (0, _block2.default)(_this7.ctx, pos[0], pos[1], "gray");
+        });
+      }
 
       this.fallingPiece.forEach(function (pos) {
-        (0, _block2.default)(_this6.ctx, pos[0], pos[1], _this6.fallingPieceColor, false);
+        (0, _block2.default)(_this7.ctx, pos[0], pos[1], _this7.fallingPieceColor);
       });
     }
   }]);
@@ -428,13 +482,13 @@ var Board = function () {
 }();
 
 var PIECE_COLORS = {
-  "square": "yellow",
-  "line": "cyan",
-  "t": "purple",
-  "s": "green",
-  "z": "red",
-  "j": "blue",
-  "l": "orange"
+  "square": "rgb(244, 228, 4)",
+  "line": "rgb(4, 244, 228)",
+  "t": "rgb(228, 4, 244)",
+  "s": "rgb(20, 244, 4)",
+  "z": "rgb(244, 4, 20)",
+  "j": "rgb(4, 20, 244)",
+  "l": "rgb(244, 108, 4)"
 };
 
 Board.EMPTY_SQUARE = 1;
@@ -484,22 +538,22 @@ var Game = function () {
   _createClass(Game, [{
     key: 'welcomeText',
     value: function welcomeText() {
-      this.boardCanvas.font = "24px Arial";
+      this.boardCanvas.font = "24px Times New Roman";
       this.boardCanvas.fillStyle = "white";
-      this.boardCanvas.fillText("Welcome To Tetris", 83, 250);
-      this.boardCanvas.fillText("Press 'b' to begin the game", 42, 280);
+      this.boardCanvas.fillText("Welcome To Tetris", 88, 250);
+      this.boardCanvas.fillText("Press 'b' to begin the game", 52, 280);
     }
   }, {
     key: 'gameOverText',
     value: function gameOverText() {
       this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
-      this.boardCanvas.fillRect(250, 0, 360, 150);
-      this.boardCanvas.font = "46px Arial";
+      this.boardCanvas.fillRect(0, 170, 360, 150);
+      this.boardCanvas.font = "46px Times New Roman";
       this.boardCanvas.fillStyle = "red";
       this.boardCanvas.fillText("GAME OVER", 42, 250);
-      this.boardCanvas.font = "24px Arial";
+      this.boardCanvas.font = "24px Times New Roman";
       this.boardCanvas.fillStyle = "white";
-      this.boardCanvas.fillText("Press 'b' to begin the game", 42, 280);
+      this.boardCanvas.fillText("Press 'b' to begin again", 68, 280);
     }
   }, {
     key: 'createModal',
@@ -532,13 +586,14 @@ var Game = function () {
         this.board.moveFallingPiece("left");
       } else if (e.keyCode === 39 && !this.board.onBorder('right')) {
         this.board.moveFallingPiece("right");
-      } else if (e.keyCode == 40 && !this.board.pieceFallen()) {
+      } else if (e.keyCode == 40 && !this.board.pieceFallen("falling")) {
         this.board.moveFallingPiece('down');
       } else if (e.keyCode === 38) {
         this.board.rotateFallingPiece('left');
       } else if (e.keyCode == 32) {
         this.board.dropFallingPiece();
-        this.playNextPiece();
+        clearInterval(this.interval);
+        setTimeout(this.resetTimer.bind(this), this.levelSpeed / 2);
       } else if (e.keyCode === 80) {
         if (this.paused) {
           this.UIModal.close();
@@ -556,15 +611,25 @@ var Game = function () {
       }
     }
   }, {
+    key: 'resetTimer',
+    value: function resetTimer() {
+      clearInterval(this.interval);
+      this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
+      this.updateBoard.apply(this);
+    }
+  }, {
     key: 'beginGame',
     value: function beginGame() {
+      if (this.interval) {
+        clearInterval(this.interval);
+      }
       this.gameOver = false;
       this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
       this.boardCanvas.fillRect(0, 0, 360, 600);
       this.currentPiece = this.randomPiece.apply(this);
       this.board = new _board2.default(this.currentPiece, this.boardCanvas);
       this.nextPiece = this.randomPiece.apply(this);
-      this.levelSpeed = 800;
+      this.levelSpeed = 500;
       this.score = 0;
       this.levelsIndex = 0;
       this.playGame.apply(this);
@@ -589,7 +654,7 @@ var Game = function () {
   }, {
     key: 'updateBoard',
     value: function updateBoard() {
-      if (this.board.pieceFallen()) {
+      if (this.board.pieceFallen("falling")) {
         this.playNextPiece();
       } else {
         this.board.moveFallingPiece("down");
@@ -626,14 +691,15 @@ var Game = function () {
     key: 'nextLevel',
     value: function nextLevel() {
       this.levelsIndex += 1;
-      this.levelSpeed = 8000 / (levelsIndex + 1);
+      this.levelSpeed = Math.floor(500 / (this.levelsIndex + 0.1));
       clearInterval(this.interval);
-      setInterval(this.updateBoard.bind(this), this.levelSpeed);
+      this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
     }
   }, {
     key: 'playNextPiece',
     value: function playNextPiece() {
       this.board.updateFallingInGrid(this.board.fallingPieceColor);
+      this.board.shadow = null;
       var eliminatedLineCount = this.board.eliminateFullLines();
       this.incrementScore(eliminatedLineCount);
       this.board.setFallingPiece(this.nextPiece);
@@ -679,12 +745,17 @@ var Game = function () {
 }();
 
 var LEVEL_THRESHOLDS = {
-  0: 0,
+  0: 500,
   1: 1000,
-  2: 2000,
+  2: 3000,
   3: 5000,
   4: 8000,
-  5: 12000
+  5: 12000,
+  6: 15000,
+  7: 18000,
+  8: 25000,
+  9: 35000,
+  10: 50000
 };
 
 var PIECES = ["square", "j", "l", "line", "s", "z", "t"];
@@ -730,14 +801,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var inverseSkew = function inverseSkew(ctx, x, y, size) {
   for (var i = 0; i < 2; i++) {
-    (0, _block2.default)(ctx, x, y, 'green', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(20, 244, 4)', size);
     x += 1;
   }
 
   x -= 1;
   y += 1;
   for (var _i = 0; _i < 2; _i++) {
-    (0, _block2.default)(ctx, x, y, 'green', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(20, 244, 4)', size);
     x += 1;
   }
 };
@@ -763,13 +834,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var jBlock = function jBlock(ctx, x, y, size) {
   for (var i = 0; i < 3; i++) {
-    (0, _block2.default)(ctx, x, y, 'orange', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(4, 20, 244)', size);
     x += 1;
   }
 
   x -= 3;
   y += 1;
-  (0, _block2.default)(ctx, x, y, 'orange', size);
+  (0, _block2.default)(ctx, x, y, 'rgb(4, 20, 244)', size);
 };
 
 exports.default = jBlock;
@@ -793,13 +864,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var lBlock = function lBlock(ctx, x, y, size) {
   for (var i = 0; i < 3; i++) {
-    (0, _block2.default)(ctx, x, y, 'blue', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(244, 108, 4)', size);
     x += 1;
   }
 
   x -= 1;
   y += 1;
-  (0, _block2.default)(ctx, x, y, 'blue', size);
+  (0, _block2.default)(ctx, x, y, 'rgb(244, 108, 4)', size);
 };
 
 exports.default = lBlock;
@@ -823,7 +894,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var line = function line(ctx, x, y, size) {
   for (var i = 0; i < 4; i++) {
-    (0, _block2.default)(ctx, x, y, 'cyan', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(4, 244, 228)', size);
     x += 1;
   }
 };
@@ -913,14 +984,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var outverseSkew = function outverseSkew(ctx, x, y, size) {
   y += 1;
   for (var i = 0; i < 2; i++) {
-    (0, _block2.default)(ctx, x, y, 'red', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(244, 4, 20)', size);
     x += 1;
   }
 
   x -= 1;
   y -= 1;
   for (var _i = 0; _i < 2; _i++) {
-    (0, _block2.default)(ctx, x, y, 'red', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(244, 4, 20)', size);
     x += 1;
   }
 };
@@ -946,14 +1017,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var square = function square(ctx, x, y, size) {
   for (var i = 0; i < 2; i++) {
-    (0, _block2.default)(ctx, x, y, 'yellow', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(244, 228, 4)', size);
     x += 1;
   }
   x -= 1 * 2;
   y += 1;
 
   for (var _i = 0; _i < 2; _i++) {
-    (0, _block2.default)(ctx, x, y, 'yellow', size);
+    (0, _block2.default)(ctx, x, y, 'rgb(244, 228, 4)', size);
     x += 1;
   }
 };
@@ -979,13 +1050,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var tTurn = function tTurn(ctx, x, y, size) {
   for (var i = 0; i < 3; i++) {
-    (0, _block2.default)(ctx, x, y, 'purple', size);
+    (0, _block2.default)(ctx, x, y, "rgb(228, 4, 244)", size);
     x += 1;
   }
 
   x -= 2;
   y += 1;
-  (0, _block2.default)(ctx, x, y, 'purple', size);
+  (0, _block2.default)(ctx, x, y, "rgb(228, 4, 244)", size);
 };
 
 exports.default = tTurn;

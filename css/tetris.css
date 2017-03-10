@@ -13,11 +13,22 @@ section, p, footer, small {
   background: transparent;
 }*/
 
-/*@font-face {
+@font-face {
   font-family: tetrisFont;
   src: local url('TetrisNewCentury.tff');
-}*/
+}
 
+
+.developer-info {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 14px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
 .background {
   position: fixed;
   top: 0;
@@ -92,7 +103,7 @@ section, p, footer, small {
   height: 600px;
   background-color: black;
   border: 1px solid white;
-  margin-top: 140px;
+  margin-top: 80px;
 }
 
 .content {

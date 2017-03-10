@@ -15,21 +15,21 @@ class Game {
   }
 
   welcomeText() {
-    this.boardCanvas.font = "24px Arial";
+    this.boardCanvas.font = "24px Times New Roman";
     this.boardCanvas.fillStyle = "white";
-    this.boardCanvas.fillText("Welcome To Tetris",83,250);
-    this.boardCanvas.fillText("Press 'b' to begin the game",42,280);
+    this.boardCanvas.fillText("Welcome To Tetris",88,250);
+    this.boardCanvas.fillText("Press 'b' to begin the game",52,280);
   }
 
   gameOverText() {
     this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
-    this.boardCanvas.fillRect(250, 0, 360, 150 );
-    this.boardCanvas.font = "46px Arial";
+    this.boardCanvas.fillRect(0, 170, 360, 150 );
+    this.boardCanvas.font = "46px Times New Roman";
     this.boardCanvas.fillStyle = "red";
     this.boardCanvas.fillText("GAME OVER",42,250);
-    this.boardCanvas.font = "24px Arial";
+    this.boardCanvas.font = "24px Times New Roman";
     this.boardCanvas.fillStyle = "white";
-    this.boardCanvas.fillText("Press 'b' to begin the game",42,280);
+    this.boardCanvas.fillText("Press 'b' to begin again",68,280);
   }
 
   createModal() {
