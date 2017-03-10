@@ -1,3 +1,23 @@
+/*html, head, body, header,
+nav, h1, a, ul, li, main,
+section, p, footer, small {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  background-color: inherit;
+  text-align: inherit;
+  text-decoration: inherit;
+  vertical-align: inherit;
+  box-sizing: inherit;
+  background: transparent;
+}*/
+
+/*@font-face {
+  font-family: tetrisFont;
+  src: local url('TetrisNewCentury.tff');
+}*/
+
 .background {
   position: fixed;
   top: 0;
@@ -52,7 +72,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 35px;
+  margin-top: 150px;
 }
 
 .score {
@@ -72,7 +92,7 @@
   height: 600px;
   background-color: black;
   border: 1px solid white;
-  margin-top: 30px;
+  margin-top: 140px;
 }
 
 .content {

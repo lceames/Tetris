@@ -316,13 +316,13 @@ class Board {
 }
 
 const PIECE_COLORS = {
-  "square": "yellow",
-  "line": "cyan",
-  "t": "purple",
-  "s": "green",
-  "z": "red",
-  "j": "blue",
-  "l": "orange"
+  "square": "rgb(244, 228, 4)",
+  "line": "rgb(4, 244, 228)",
+  "t": "rgb(228, 4, 244)",
+  "s": "rgb(20, 244, 4)",
+  "z": "rgb(244, 4, 20)",
+  "j": "rgb(4, 20, 244)",
+  "l": "rgb(244, 108, 4)"
 };
 
 Board.EMPTY_SQUARE = 1;
