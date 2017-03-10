@@ -298,6 +298,7 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
+    this.clearShadowFromCanvas();
     this.setShadowPositions();
   }
 

@@ -99,11 +99,13 @@ class Game {
   }
 
   resetTimer() {
-    this.updateBoard.apply(this);
+    clearInterval(this.interval);
     this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
+    this.updateBoard.apply(this);
   }
 
   beginGame() {
+    if (this.interval) { clearInterval(this.interval); }
     this.gameOver = false;
     this.boardCanvas.fillStyle = "rgba(0, 0, 21, 1)";
     this.boardCanvas.fillRect(0, 0, 360, 600);
@@ -168,9 +170,9 @@ class Game {
 
   nextLevel() {
     this.levelsIndex += 1;
-    this.levelSpeed = Math.floor(500 / (this.levelsIndex + 0.5));
+    this.levelSpeed = Math.floor(500 / (this.levelsIndex + 0.1));
     clearInterval(this.interval);
-    setInterval(this.updateBoard.bind(this), this.levelSpeed);
+    this.interval = setInterval(this.updateBoard.bind(this), this.levelSpeed);
   }
 
   playNextPiece() {
@@ -216,12 +218,17 @@ class Game {
 }
 
 const LEVEL_THRESHOLDS = {
-  0: 0,
+  0: 500,
   1: 1000,
-  2: 2000,
+  2: 3000,
   3: 5000,
   4: 8000,
-  5: 12000
+  5: 12000,
+  6: 15000,
+  7: 18000,
+  8: 25000,
+  9: 35000,
+  10: 50000
 };
 
 const PIECES = ["square", "j", "l", "line", "s", "z", "t"];
