@@ -487,8 +487,8 @@ var PIECE_COLORS = {
   "t": "rgb(228, 4, 244)",
   "s": "rgb(20, 244, 4)",
   "z": "rgb(244, 4, 20)",
-  "j": "rgb(4, 20, 244)",
-  "l": "rgb(244, 108, 4)"
+  "j": "rgb(244, 108, 4)",
+  "l": "rgb(4, 20, 244)"
 };
 
 Board.EMPTY_SQUARE = 1;
@@ -799,21 +799,22 @@ var _block2 = _interopRequireDefault(_block);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var inverseSkew = function inverseSkew(ctx, x, y, size) {
+var outverseSkew = function outverseSkew(ctx, x, y, size) {
+  y += 1;
   for (var i = 0; i < 2; i++) {
     (0, _block2.default)(ctx, x, y, 'rgb(20, 244, 4)', size);
     x += 1;
   }
 
   x -= 1;
-  y += 1;
+  y -= 1;
   for (var _i = 0; _i < 2; _i++) {
     (0, _block2.default)(ctx, x, y, 'rgb(20, 244, 4)', size);
     x += 1;
   }
 };
 
-exports.default = inverseSkew;
+exports.default = outverseSkew;
 
 /***/ }),
 /* 5 */
@@ -981,22 +982,21 @@ var _block2 = _interopRequireDefault(_block);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var outverseSkew = function outverseSkew(ctx, x, y, size) {
-  y += 1;
+var inverseSkew = function inverseSkew(ctx, x, y, size) {
   for (var i = 0; i < 2; i++) {
     (0, _block2.default)(ctx, x, y, 'rgb(244, 4, 20)', size);
     x += 1;
   }
 
   x -= 1;
-  y -= 1;
+  y += 1;
   for (var _i = 0; _i < 2; _i++) {
     (0, _block2.default)(ctx, x, y, 'rgb(244, 4, 20)', size);
     x += 1;
   }
 };
 
-exports.default = outverseSkew;
+exports.default = inverseSkew;
 
 /***/ }),
 /* 10 */
