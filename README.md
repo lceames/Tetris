@@ -4,7 +4,7 @@
 
 Tetris is a a browser version of the classic tile-matching, puzzle video game, built using vanilla Javascript and HTML5 Canvas.
 
-[Live version]: (https://www.lceames.github.io/Tetris)
+[Live version](https://www.lceames.github.io/Tetris)
 
 ![](images/preview-image.png)
 
