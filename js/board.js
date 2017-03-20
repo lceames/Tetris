@@ -162,7 +162,6 @@ class Board {
       });
     });
 
-
     let transposed = [];
 
     for (let i = 0; i < matrix.length; i++) {
