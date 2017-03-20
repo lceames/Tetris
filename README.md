@@ -27,4 +27,9 @@ This application uses a transpose and reverse strategy to rotate pieces. It spli
 
 ### Shadowing
 
-The shadow represents where the falling piece will land on its current downward trajectory. This feature was accomplished using an array of shadow coordinates. They are calculated, every time the falling piece's coordinates change, by incrementing along the y axis until they are touching another piece or a wall. 
+The shadow represents where the falling piece will land on its current downward trajectory. This feature was accomplished using an array of shadow coordinates. They are calculated, every time the falling piece's coordinates change, by incrementing along the y axis until they are touching another piece or a wall.
+
+## Todos
+
+- [ ] Leaderboard
+- [ ] Counter-clockwise rotation
