@@ -79,11 +79,11 @@ class Board {
     if (matrix.length === 0 || this.matrixContainsFallenPiece(matrix)) {
       return;
     }
-    this.paintCanvas();
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.setFallingFromMatrix.call(this, matrix, minX, minY);
     this.updateFallingInGrid("falling");
     this.setShadowPositions();
+    this.paintCanvas();
   }
 
   matrixContainsFallenPiece(matrix) {

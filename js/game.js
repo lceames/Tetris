@@ -15,7 +15,7 @@ class Game {
   }
 
   welcomeText() {
-    this.boardCanvas.font = "24px Exo";
+    this.boardCanvas.font = "24px Arial";
     this.boardCanvas.fillStyle = "white";
     this.boardCanvas.fillText("Welcome To Tetris",83,250);
     this.boardCanvas.fillText("Press 'b' to begin the game",40,280);

@@ -202,11 +202,11 @@ var Board = function () {
       if (matrix.length === 0 || this.matrixContainsFallenPiece(matrix)) {
         return;
       }
-      this.paintCanvas();
       this.updateFallingInGrid(Board.EMPTY_SQUARE);
       this.setFallingFromMatrix.call(this, matrix, minX, minY);
       this.updateFallingInGrid("falling");
       this.setShadowPositions();
+      this.paintCanvas();
     }
   }, {
     key: 'matrixContainsFallenPiece',
@@ -514,7 +514,7 @@ var Game = function () {
   _createClass(Game, [{
     key: 'welcomeText',
     value: function welcomeText() {
-      this.boardCanvas.font = "24px Exo";
+      this.boardCanvas.font = "24px Arial";
       this.boardCanvas.fillStyle = "white";
       this.boardCanvas.fillText("Welcome To Tetris", 83, 250);
       this.boardCanvas.fillText("Press 'b' to begin the game", 40, 280);
