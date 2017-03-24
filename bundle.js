@@ -120,7 +120,6 @@ var Board = function () {
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
     this.eliminateFullLines = this.eliminateFullLines.bind(this);
-    this.clearShadowFromCanvas = this.clearShadowFromCanvas.bind(this);
     this.shiftPositions = this.shiftPositions.bind(this);
     this.updateFallingPos = this.updateFallingPos.bind(this);
 
@@ -137,8 +136,7 @@ var Board = function () {
     key: 'moveFallingPiece',
     value: function moveFallingPiece(dir) {
       this.updateFallingInGrid(Board.EMPTY_SQUARE);
-      this.clearFallingFromCanvas();
-      this.clearShadowFromCanvas();
+      this.paintCanvas();
       this.updateFallingPos(dir, "falling");
       this.setShadowPositions();
       this.updateFallingInGrid("falling");
@@ -185,27 +183,6 @@ var Board = function () {
       }
     }
   }, {
-    key: 'clearFallingFromCanvas',
-    value: function clearFallingFromCanvas() {
-      var self = this;
-      this.fallingPiece.forEach(function (pos) {
-        self.ctx.clearRect(pos[0] * 30, pos[1] * 30, 31, 31);
-        self.ctx.fillStyle = "rgba(0, 0, 21, 1)";
-        self.ctx.fillRect(pos[0] * 30, pos[1] * 30, 31, 31);
-      });
-    }
-  }, {
-    key: 'clearShadowFromCanvas',
-    value: function clearShadowFromCanvas() {
-      var _this = this;
-
-      if (this.shadow) {
-        this.shadow.forEach(function (pos) {
-          (0, _block2.default)(_this.ctx, pos[0], pos[1], "rgba(0, 0, 21, 1)");
-        });
-      }
-    }
-  }, {
     key: 'dropFallingPiece',
     value: function dropFallingPiece() {
       while (!this.pieceFallen("falling")) {
@@ -225,8 +202,7 @@ var Board = function () {
       if (matrix.length === 0 || this.matrixContainsFallenPiece(matrix)) {
         return;
       }
-      this.clearFallingFromCanvas();
-      this.clearShadowFromCanvas();
+      this.paintCanvas();
       this.updateFallingInGrid(Board.EMPTY_SQUARE);
       this.setFallingFromMatrix.call(this, matrix, minX, minY);
       this.updateFallingInGrid("falling");
@@ -246,13 +222,13 @@ var Board = function () {
   }, {
     key: 'setFallingFromMatrix',
     value: function setFallingFromMatrix(matrix, minX, minY) {
-      var _this2 = this;
+      var _this = this;
 
       this.fallingPiece = [];
       matrix.forEach(function (row, rowIdx) {
         row.forEach(function (pos, colIdx) {
           if (pos === "falling") {
-            _this2.fallingPiece.push([minX + colIdx, minY + rowIdx]);
+            _this.fallingPiece.push([minX + colIdx, minY + rowIdx]);
           }
         });
       });
@@ -340,7 +316,7 @@ var Board = function () {
   }, {
     key: 'eliminateFullLines',
     value: function eliminateFullLines() {
-      var _this3 = this;
+      var _this2 = this;
 
       var lineCount = 0;
       this.grid.forEach(function (row, idx) {
@@ -348,7 +324,7 @@ var Board = function () {
           return coord !== 1;
         })) {
           lineCount += 1;
-          _this3.eliminateLine(idx);
+          _this2.eliminateLine(idx);
         }
       });
       this.paintCanvas();
@@ -357,7 +333,7 @@ var Board = function () {
   }, {
     key: 'paintCanvas',
     value: function paintCanvas() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.ctx.clearRect(0, 0, 360, 600);
       this.ctx.fillStyle = "rgba(0, 0, 21, 0.95)";
@@ -365,7 +341,7 @@ var Board = function () {
       this.grid.forEach(function (row, rowIdx) {
         row.forEach(function (coord, colIdx) {
           if (coord !== 1) {
-            (0, _block2.default)(_this4.ctx, colIdx, rowIdx, coord, false);
+            (0, _block2.default)(_this3.ctx, colIdx, rowIdx, coord, false);
           }
         });
       });
@@ -414,19 +390,19 @@ var Board = function () {
   }, {
     key: 'updateFallingInGrid',
     value: function updateFallingInGrid(fallingState) {
-      var _this5 = this;
+      var _this4 = this;
 
       this.fallingPiece.forEach(function (pos) {
-        _this5.grid[pos[1]][pos[0]] = fallingState;
+        _this4.grid[pos[1]][pos[0]] = fallingState;
       });
     }
   }, {
     key: 'gameOver',
     value: function gameOver() {
-      var _this6 = this;
+      var _this5 = this;
 
       return this.fallingPiece.some(function (coord) {
-        if (_this6.grid[coord[1]][coord[0]] !== 1) {
+        if (_this5.grid[coord[1]][coord[0]] !== 1) {
           return true;
         }
       });
@@ -458,22 +434,22 @@ var Board = function () {
         this.rotationAxis = [5, 1];
         this.fallingPiece = [[5, 0], [5, 1], [5, 2], [6, 2]];
       }
-      this.clearShadowFromCanvas();
+      this.paintCanvas();
       this.setShadowPositions();
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this7 = this;
+      var _this6 = this;
 
       if (this.shadow) {
         this.shadow.forEach(function (pos, idx) {
-          (0, _block2.default)(_this7.ctx, pos[0], pos[1], "gray");
+          (0, _block2.default)(_this6.ctx, pos[0], pos[1], "gray");
         });
       }
 
       this.fallingPiece.forEach(function (pos) {
-        (0, _block2.default)(_this7.ctx, pos[0], pos[1], _this7.fallingPieceColor);
+        (0, _block2.default)(_this6.ctx, pos[0], pos[1], _this6.fallingPieceColor);
       });
     }
   }]);
@@ -538,7 +514,7 @@ var Game = function () {
   _createClass(Game, [{
     key: 'welcomeText',
     value: function welcomeText() {
-      this.boardCanvas.font = "24px Times New Roman";
+      this.boardCanvas.font = "24px Exo";
       this.boardCanvas.fillStyle = "white";
       this.boardCanvas.fillText("Welcome To Tetris", 88, 250);
       this.boardCanvas.fillText("Press 'b' to begin the game", 52, 280);
@@ -673,7 +649,7 @@ var Game = function () {
   }, {
     key: 'toggleSavedPiece',
     value: function toggleSavedPiece() {
-      this.board.clearFallingFromCanvas();
+      this.board.paintCanvas();
       this.board.updateFallingInGrid(_board2.default.EMPTY_SQUARE);
       if (this.savedPiece) {
         this.board.setFallingPiece(this.savedPiece);

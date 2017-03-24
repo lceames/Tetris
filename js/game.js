@@ -15,10 +15,10 @@ class Game {
   }
 
   welcomeText() {
-    this.boardCanvas.font = "24px Times New Roman";
+    this.boardCanvas.font = "24px Exo";
     this.boardCanvas.fillStyle = "white";
-    this.boardCanvas.fillText("Welcome To Tetris",88,250);
-    this.boardCanvas.fillText("Press 'b' to begin the game",52,280);
+    this.boardCanvas.fillText("Welcome To Tetris",80,250);
+    this.boardCanvas.fillText("Press 'b' to begin the game",40,280);
   }
 
   gameOverText() {
@@ -26,7 +26,7 @@ class Game {
     this.boardCanvas.fillRect(0, 170, 360, 150 );
     this.boardCanvas.font = "46px Times New Roman";
     this.boardCanvas.fillStyle = "red";
-    this.boardCanvas.fillText("GAME OVER",42,250);
+    this.boardCanvas.fillText("GAME OVER",437,250);
     this.boardCanvas.font = "24px Times New Roman";
     this.boardCanvas.fillStyle = "white";
     this.boardCanvas.fillText("Press 'b' to begin again",68,280);
@@ -46,13 +46,7 @@ class Game {
           if (this.paused) {
             this.playGame();
           }
-        },
-        // beforeClose: function() {
-        //     // here's goes some logic
-        //     // e.g. save content before closing the modal
-        //     return true; // close the modal
-        // 	return false; // nothing happens
-        // }
+        }
     });
     modal.setContent('<div><h1>GAME PAUSED</h1><p>Press "p" or close box to continue</p></div>');
 
@@ -152,7 +146,7 @@ class Game {
   }
 
   toggleSavedPiece() {
-    this.board.clearFallingFromCanvas();
+    this.board.paintCanvas();
     this.board.updateFallingInGrid(Board.EMPTY_SQUARE);
     if (this.savedPiece) {
       this.board.setFallingPiece(this.savedPiece);

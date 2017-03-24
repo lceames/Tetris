@@ -6,7 +6,6 @@ class Board {
     this.pieceFallen = this.pieceFallen.bind(this);
     this.moveFallingPiece = this.moveFallingPiece.bind(this);
     this.eliminateFullLines = this.eliminateFullLines.bind(this);
-    this.clearShadowFromCanvas = this.clearShadowFromCanvas.bind(this);
     this.shiftPositions = this.shiftPositions.bind(this);
     this.updateFallingPos = this.updateFallingPos.bind(this);
 
@@ -21,8 +20,7 @@ class Board {
 
   moveFallingPiece(dir) {
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
-    this.clearFallingFromCanvas();
-    this.clearShadowFromCanvas();
+    this.paintCanvas();
     this.updateFallingPos(dir, "falling");
     this.setShadowPositions();
     this.updateFallingInGrid("falling");
@@ -69,24 +67,6 @@ class Board {
     }
   }
 
-  clearFallingFromCanvas() {
-    let self = this;
-    this.fallingPiece.forEach( pos => {
-      self.ctx.clearRect((pos[0] * 30), (pos[1] * 30), 31, 31);
-      self.ctx.fillStyle = "rgba(0, 0, 21, 1)";
-      self.ctx.fillRect((pos[0] * 30), (pos[1] * 30), 31, 31);
-    });
-  }
-
-  clearShadowFromCanvas() {
-    if (this.shadow) {
-      this.shadow.forEach( pos => {
-        block(this.ctx, pos[0], pos[1], "rgba(0, 0, 21, 1)");
-      });
-    }
-  }
-
-
   dropFallingPiece() {
     while (!this.pieceFallen("falling")) {
       this.moveFallingPiece("down");
@@ -99,8 +79,7 @@ class Board {
     if (matrix.length === 0 || this.matrixContainsFallenPiece(matrix)) {
       return;
     }
-    this.clearFallingFromCanvas();
-    this.clearShadowFromCanvas();
+    this.paintCanvas();
     this.updateFallingInGrid(Board.EMPTY_SQUARE);
     this.setFallingFromMatrix.call(this, matrix, minX, minY);
     this.updateFallingInGrid("falling");
@@ -297,7 +276,7 @@ class Board {
       this.rotationAxis = [5,1];
       this.fallingPiece = [[5,0], [5,1], [5,2], [6,2]];
     }
-    this.clearShadowFromCanvas();
+    this.paintCanvas();
     this.setShadowPositions();
   }
 
